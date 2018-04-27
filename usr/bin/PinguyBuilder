@@ -260,6 +260,7 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
 log_msg "Cleaning System before building"
     apt-get clean
     rm -rf /opt/teamviewer/config/global.conf
+    cp -a /etc/PinguyBuilder/ubiquity /usr/lib/ubiquity/
 
     # Check if they are using lightdm and if it is setup properly for the live default session
     # [ "`grep lightdm /etc/X11/default-display-manager`" != "" ] && [ ! -f /etc/lightdm/lightdm.conf ] && [ ! -f /usr/share/xsessions/ubuntu.desktop ] && echo "Lightdm not setup properly. You must set your default desktop with lightdm prior to remastering" &&  echo "Lightdm not setup properly. You must set your default desktop with lightdm prior to remastering" >> $WORKDIR/PinguyBuilder.log && exit 1
