@@ -248,7 +248,7 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
         apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
         chmod +x /usr/share/applications/kde4/ubiquity-kdeui.desktop &> /dev/null
         gio set /usr/share/applications/kde4/ubiquity-kdeui.desktop metadata::trusted yes &> /dev/null
-        sed -i "s/ubiquity/pkexec ubiquity/" /usr/share/applications/kde4/ubiquity-kdeui.desktop metadata::trusted yes &> /dev/null
+        sed -i "s/ubiquity kde_ui/pkexec ubiquity kde_ui/" /usr/share/applications/kde4/ubiquity-kdeui.desktop
     else
         log_msg "Installing the Ubiquity GTK frontend"
         apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
