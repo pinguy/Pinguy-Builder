@@ -1,8 +1,8 @@
 Package: pinguybuilder
-Version: 5.0-6
+Version: 5.0-8
 Architecture: all
 Maintainer: pinguy <antoni.norman@gmail.com>
-Installed-Size: 11784
+Installed-Size: 11788
 Depends: archdetect-deb, memtest86+, coreutils, dialog, mkisofs | genisoimage, findutils, bash, passwd, sed, squashfs-tools, casper, rsync, mount, eject, libdebian-installer4, os-prober, user-setup, discover1 | discover, laptop-detect, syslinux, syslinux-common, util-linux, aufs-tools | unionfs-fuse, dpkg-dev, policykit-1, python (>= 2.7), python (<< 2.8), python-glade2, python-vte, plymouth-x11
 Section: utils
 Priority: optional
