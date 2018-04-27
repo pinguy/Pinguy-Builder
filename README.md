@@ -3,4 +3,4 @@ Tool to remaster *buntu systems
 
 Was working for Ubuntu 18.04 until this patch. https://bugs.launchpad.net/ubuntukylin/+bug/1767067
 
-OK, using a older version that works. Its a hacky patch but it works. Replacing /usr/lib/ubiquity/ubiquity with a older version.
+Working again. The fix was to run the installer with pkexec. This fixed the permission issues.
