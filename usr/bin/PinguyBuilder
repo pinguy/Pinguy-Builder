@@ -260,6 +260,8 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
 log_msg "Cleaning System before building"
     apt-get clean
     rm -rf /opt/teamviewer/config/global.conf
+
+log_msg "Rolling back ubiquity to a working version"
     cp -a /etc/PinguyBuilder/ubiquity /usr/lib/ubiquity/
 
     # Check if they are using lightdm and if it is setup properly for the live default session
