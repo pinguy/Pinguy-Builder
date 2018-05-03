@@ -285,37 +285,27 @@ log_msg "Cleaning System before building"
     sleep 1
 
     #Creating startup script to set the installer as trusted
-    rm -rf /etc/systemd/system/rc.local.service
-    touch /etc/systemd/system/rc.local.service
-    echo "[Unit]" >> /etc/systemd/system/rc.local.service
-    echo "Description=/etc/rc.local Compatibility" >> /etc/systemd/system/rc.local.service
-    echo "ConditionPathExists=/etc/rc.local" >> /etc/systemd/system/rc.local.service
-    echo "[Service]" >> /etc/systemd/system/rc.local.service
-    echo "Type=forking" >> /etc/systemd/system/rc.local.service
-    echo "ExecStart=/etc/rc.local start" >> /etc/systemd/system/rc.local.service
-    echo "TimeoutSec=0" >> /etc/systemd/system/rc.local.service
-    echo "StandardOutput=tty" >> /etc/systemd/system/rc.local.service
-    echo "RemainAfterExit=yes" >> /etc/systemd/system/rc.local.service
-    echo "SysVStartPriority=99" >> /etc/systemd/system/rc.local.service
-    echo "[Install]" >> /etc/systemd/system/rc.local.service
-    echo "WantedBy=multi-user.target" >> /etc/systemd/system/rc.local.service
-    chmod 755 /etc/systemd/system/rc.local.service
-    chmod +x /etc/systemd/system/rc.local.service
+    #rm -rf /etc/systemd/system/rc.local.service
+    #touch /etc/systemd/system/rc.local.service
+    #echo "[Unit]" >> /etc/systemd/system/rc.local.service
+    #echo "Description=/etc/rc.local Compatibility" >> /etc/systemd/system/rc.local.service
+    #echo "ConditionPathExists=/etc/rc.local" >> /etc/systemd/system/rc.local.service
+    #echo "[Service]" >> /etc/systemd/system/rc.local.service
+    #echo "Type=forking" >> /etc/systemd/system/rc.local.service
+    #echo "ExecStart=/etc/rc.local start" >> /etc/systemd/system/rc.local.service
+    #echo "TimeoutSec=0" >> /etc/systemd/system/rc.local.service
+    #echo "StandardOutput=tty" >> /etc/systemd/system/rc.local.service
+    #echo "RemainAfterExit=yes" >> /etc/systemd/system/rc.local.service
+    #echo "SysVStartPriority=99" >> /etc/systemd/system/rc.local.service
+    #echo "[Install]" >> /etc/systemd/system/rc.local.service
+    #echo "WantedBy=multi-user.target" >> /etc/systemd/system/rc.local.service
+    #chmod 755 /etc/systemd/system/rc.local.service
+    #chmod +x /etc/systemd/system/rc.local.service
 
-    sleep 1
+    #sleep 1
 
-    rm -rf /etc/rc.local
-    touch /etc/rc.local
-    echo "#!/bin/sh" >> /etc/rc.local
-    echo "sudo -i -u $LIVEUSER dbus-run-session -- gio set /home/$LIVEUSER/Desktop/ubiquity.desktop metadata::trusted yes" >> /etc/rc.local
-    echo "exit 0" >> /etc/rc.local
-    chmod 755 /etc/rc.local
-    chmod +x /etc/rc.local
-
-    sleep 1
-
-    systemctl enable rc.local.service
-    systemctl start rc.local.service
+    #systemctl enable rc.local.service
+    #systemctl start rc.local.service
 
     sleep 1
 
@@ -364,6 +354,14 @@ log_msg "Cleaning System before building"
     cp /etc/PinguyBuilder/grub.ucf-dist $WORKDIR/dummysys/etc/default/grub
     sed -i "s/LIVECDLABEL/$LIVECDLABEL/g" $WORKDIR/dummysys/etc/default/grub
 
+    #Creating startup script so the installer is marked as 'Trusted' on the desktop
+    touch /etc/rc.local
+    echo "#!/bin/sh" >> $WORKDIR/dummysys/etc/rc.local
+    echo "sudo -i -u $LIVEUSER dbus-run-session -- gio set /home/$LIVEUSER/Desktop/ubiquity.desktop metadata::trusted yes" >> $WORKDIR/dummysys/etc/rc.local
+    echo "exit 0" >> $WORKDIR/dummysys/etc/rc.local
+    chmod 755 $WORKDIR/dummysys/etc/rc.local
+    chmod +x $WORKDIR/dummysys/etc/rc.local
+
     log_msg "Cleaning up files not needed for the live in $WORKDIR/dummysys"
     rm -rf $WORKDIR/dummysys/etc/apt/sources.list.d/*.save &> /dev/null
     rm -rf $WORKDIR/dummysys/etc/apt/apt.conf.d/* &> /dev/null
@@ -399,6 +397,7 @@ log_msg "Cleaning System before building"
 	rm -rf $WORKDIR/dummysys/var/lib/kdm/*
         rm -rf $WORKDIR/dummysys/var/run/console/*
         rm -f $WORKDIR/dummysys/etc/gdm3/gdm3.conf-custom
+        rm -rf $WORKDIR/dummysys/etc/apt/sources.list.d/* 
         #Setting up auto timed login for gdm3
         cp -a /etc/PinguyBuilder/gdm3 $WORKDIR/dummysys/etc/
         sed -i "s/LIVEUSER/$LIVEUSER/g" $WORKDIR/dummysys/etc/gdm3/custom.conf
@@ -790,7 +789,6 @@ FOO
     log_msg "Removing PinguyBuilder-firstboot from system startup"
     update-rc.d -f PinguyBuilder-firstboot remove
     chmod 644 /etc/init.d/PinguyBuilder-firstboot
-    rm -rf /etc/rc.local
 
 }
 
