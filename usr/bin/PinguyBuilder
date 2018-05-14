@@ -41,6 +41,7 @@ do_start() {
             rm -r /etc/apt
             tar -xf /root/apt.tar.gz -C /
             rm -rf /root/apt.tar.gz
+            apt-get update
             #Place your custom commands below this line
             #Example to remove PinguyBuilder and clean up packages
 
@@ -208,7 +209,11 @@ case $1  in
 esac
 
 cdfs (){
+#Cleaning Apt and backing up
+find /etc/apt -type f -iname \*.save -delete &> /dev/null
+find /etc/apt -type f -iname \*~ -delete &> /dev/null
 tar pczvf /root/apt.tar.gz /etc/apt &> /dev/null
+sed -i "s/deb/#deb/g" /etc/apt/sources.list.d/official-package-repositories.list &> /dev/null
     apt-get update  &> /dev/null
 
 log_msg "Enabling PinguyBuilder-firstboot"
@@ -258,9 +263,23 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
         sed -i "s/sh -c 'ubiquity gtk_ui'/pkexec ubiquity gtk_ui/" /usr/share/applications/ubiquity.desktop
     fi
 
+    # Replacing Ubiquity icons
+    cp -a /etc/PinguyBuilder/icons /usr/share/
+    rm -rf /usr/share/icons/hicolor/256x256/apps/ubuntu-logo-icon.png
+    ln -s /usr/share/icons/ubuntu-logo-icon.png /usr/share/icons/hicolor/256x256/apps
+    chmod 777 /usr/share/icons/hicolor/256x256/apps/ubuntu-logo-icon.png
+    chmod 777 /usr/share/icons/ubuntu-logo-icon.png
+    gtk-update-icon-cache
+    update-icon-caches /usr/share/icons/*
+    sed -i "s/#deb/deb/g" /etc/apt/sources.list.d/official-package-repositories.list &> /dev/null
+
 log_msg "Cleaning System before building"
     apt-get clean
     rm -rf /opt/teamviewer/config/global.conf
+
+log_msg "Renaming Distro to $LIVECDLABEL"
+    sed -i 's/PRETTY_NAME=.*/PRETTY_NAME="LIVECDLABEL"/g' /usr/lib/os-release
+    sed -i "s/LIVECDLABEL/$LIVECDLABEL/g" /usr/lib/os-release
 
     # Check if they are using lightdm and if it is setup properly for the live default session
     # [ "`grep lightdm /etc/X11/default-display-manager`" != "" ] && [ ! -f /etc/lightdm/lightdm.conf ] && [ ! -f /usr/share/xsessions/ubuntu.desktop ] && echo "Lightdm not setup properly. You must set your default desktop with lightdm prior to remastering" &&  echo "Lightdm not setup properly. You must set your default desktop with lightdm prior to remastering" >> $WORKDIR/PinguyBuilder.log && exit 1
@@ -368,7 +387,8 @@ log_msg "Cleaning System before building"
     rm -rf $WORKDIR/dummysys/etc/apt/preferences.d/* &> /dev/null
     rm -rf $WORKDIR/dummysys/var/lib/apt/lists/* -vf &> /dev/null
     rm -rf $WORKDIR/dummysys/var/lib/apt/lists/lock &> /dev/null
-    rm -rf $WORKDIR/dummysys/var/cache/apt/archives/* &> /dev/null
+    find $WORKDIR/dummysys/var/cache/apt -type f -exec rm -rf '{}' \; &> /dev/null
+    find $WORKDIR/dummysys/var/lib/apt -type f -exec rm -rf '{}' \; &> /dev/null
     rm -rf $WORKDIR/dummysys/var/lib/ureadahead/pack &> /dev/null
     rm -f $WORKDIR/dummysys/etc/X11/xorg.conf*
     rm -f $WORKDIR/dummysys/etc/{hosts,hostname,mtab*,fstab}
@@ -397,7 +417,10 @@ log_msg "Cleaning System before building"
 	rm -rf $WORKDIR/dummysys/var/lib/kdm/*
         rm -rf $WORKDIR/dummysys/var/run/console/*
         rm -f $WORKDIR/dummysys/etc/gdm3/gdm3.conf-custom
-        rm -rf $WORKDIR/dummysys/etc/apt/sources.list.d/* 
+        rm -rf $WORKDIR/dummysys/etc/apt/sources.list.d/*
+        cp -a /etc/PinguyBuilder/logo $WORKDIR/dummysys/etc/cron.hourly
+        chmod +x $WORKDIR/dummysys/etc/cron.hourly/logo
+        chmod 755 $WORKDIR/dummysys/etc/cron.hourly/logo
         #Setting up auto timed login for gdm3
         cp -a /etc/PinguyBuilder/gdm3 $WORKDIR/dummysys/etc/
         sed -i "s/LIVEUSER/$LIVEUSER/g" $WORKDIR/dummysys/etc/gdm3/custom.conf
