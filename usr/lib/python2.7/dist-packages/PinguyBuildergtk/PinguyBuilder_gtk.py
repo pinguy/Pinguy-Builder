@@ -30,7 +30,7 @@ except:
 
 APP = "PinguyBuilder-gtk"
 DIR = "/usr/share/locale"
-APP_VERSION = "5.0-6"
+APP_VERSION = "5.1-0"
 
 locale.setlocale(locale.LC_ALL, '')
 gtk.glade.bindtextdomain(APP, DIR)
@@ -176,7 +176,7 @@ class appgui:
         about.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         about.set_program_name(_("PinguyBuilder"))
         about.set_version(APP_VERSION)
-        about.set_authors([_("Krasimir S. Stefanov <lokiisyourmaster@gmail.com>"),_("Tony Brijeski <tb6517@yahoo.com>"),_("Antoni Norman <antoni.norman@gmail.com>")])
+        about.set_authors([_("Antoni Norman <antoni.norman@gmail.com>"),_("Krasimir S. Stefanov <lokiisyourmaster@gmail.com>"),_("Tony Brijeski <tb6517@yahoo.com>"),_])
         about.set_website("http://pinguyos.com/")
         translators = [
             _("Bulgarian - Krasimir S. Stefanov <lokiisyourmaster@gmail.com>"),
@@ -186,9 +186,9 @@ class appgui:
         about.set_translator_credits('\n'.join(translators))
         about.set_logo_icon_name('PinguyBuilder-gtk')
         license = _('''PyGTK GUI for PinguyBuilder
-Copyright (C) 2011 Krasimir S. Stefanov, Tony Brijeski, Antoni Norman
-Licence: GPLv3.0
-http://www.gnu.org/licenses/.''')
+Copyright (C) 2018 Antoni Norman, Krasimir S. Stefanov, Tony Brijeski
+Licence: DBAD
+https://www.dbad-license.org/.''')
         about.set_license(license)
         about.run()
         about.hide()
