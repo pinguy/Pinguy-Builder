@@ -1,0 +1,5 @@
+#!/bin/sh
+rm -rf /usr/share/icons/hicolor/256x256/apps/ubuntu-logo-icon.png
+ln -s /usr/share/icons/ubuntu-logo-icon.png /usr/share/icons/hicolor/256x256/apps
+chmod 777 /usr/share/icons/hicolor/256x256/apps/ubuntu-logo-icon.png
+chmod 777 /usr/share/icons/ubuntu-logo-icon.png
