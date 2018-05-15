@@ -1,5 +1,5 @@
 983424f6b5010acc06da4dc2e57a6192  etc/PinguyBuilder/mdm/mdm.conf
-9632669be6da16086847d475e1987fb9  etc/PinguyBuilder/preseed/custom.seed
+f3d86357a97538f4074fbce2175ed0a6  etc/PinguyBuilder/preseed/custom.seed
 8d5a011241e35019d162a0e08412d161  etc/PinguyBuilder/PinguyBuilder.version
 ee0d58fd993b6f31b5e34123ddca2b3b  etc/PinguyBuilder/isolinux/isolinux.cfg.vesamenu
 1457efc9b2499eec7d6bada6bcf076b7  etc/PinguyBuilder/isolinux/splash.png
@@ -42,7 +42,7 @@ df4a34fa5b6cd61908fd176d23047dd2  usr/share/icons/hicolor/32x32/apps/PinguyBuild
 21d238ae2cbe28e0e6be4feae7f7f03c  usr/share/doc/PinguyBuilder/copyright
 6da37846d249491b8286fbb1cf00b3d7  usr/share/lintian/overrides/pinguybuilder
 53d1437e1fbf3663ae32f71ab145a102  usr/bin/PinguyBuilder-gtk
-841f4c188e08b00dd6c5c519ec9b31e7  usr/bin/PinguyBuilder
+35e4665bbca7a1cc01215ca04e5cb4af  usr/bin/PinguyBuilder
 3687f43f13d277c8dc95a29ffda91ad6  usr/bin/PinguyBuilder-skelcopy
 d4478ae7afc82d34c317576f57be78fe  usr/bin/plymouth-preview
 1db7aa09c2bda1d08b0f7b61a54a2e2d  usr/lib/PinguyBuilder/EFI/BOOT/bootia32.efi
