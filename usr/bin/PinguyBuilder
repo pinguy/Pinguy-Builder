@@ -275,6 +275,7 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
 
 log_msg "Cleaning System before building"
     apt-get clean
+    apt-get purge firefox-locale*
     rm -rf /opt/teamviewer/config/global.conf
 
 log_msg "Renaming Distro to $LIVECDLABEL"
