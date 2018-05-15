@@ -377,6 +377,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     touch /etc/rc.local
     echo "#!/bin/sh" >> $WORKDIR/dummysys/etc/rc.local
     echo "sudo -i -u $LIVEUSER dbus-run-session -- gio set /home/$LIVEUSER/Desktop/ubiquity.desktop metadata::trusted yes" >> $WORKDIR/dummysys/etc/rc.local
+    echo "apt-get update" >> $WORKDIR/dummysys/etc/rc.local
     echo "exit 0" >> $WORKDIR/dummysys/etc/rc.local
     chmod 755 $WORKDIR/dummysys/etc/rc.local
     chmod +x $WORKDIR/dummysys/etc/rc.local
