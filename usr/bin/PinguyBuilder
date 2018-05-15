@@ -275,8 +275,12 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
 
 log_msg "Cleaning System before building"
     apt-get clean
-    apt-get purge firefox-locale*
+    apt-get purge firefox-locale* --yes --assume-yes &> /dev/null
     rm -rf /opt/teamviewer/config/global.conf
+    #Removing swapfile
+    swapoff -v /swapfile &> /dev/null
+    rm /swapfile &> /dev/null
+    sed -i '/swapfile/d' /etc/fstab
 
 log_msg "Renaming Distro to $LIVECDLABEL"
     sed -i 's/PRETTY_NAME=.*/PRETTY_NAME="LIVECDLABEL"/g' /usr/lib/os-release
