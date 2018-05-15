@@ -45,9 +45,9 @@ df4a34fa5b6cd61908fd176d23047dd2  usr/share/icons/hicolor/32x32/apps/PinguyBuild
 35e4665bbca7a1cc01215ca04e5cb4af  usr/bin/PinguyBuilder
 3687f43f13d277c8dc95a29ffda91ad6  usr/bin/PinguyBuilder-skelcopy
 d4478ae7afc82d34c317576f57be78fe  usr/bin/plymouth-preview
+6e94c3d33194c89bd327bfaa5871e294  usr/lib/PinguyBuilder/EFI/BOOT/BOOTx64.EFI
 1db7aa09c2bda1d08b0f7b61a54a2e2d  usr/lib/PinguyBuilder/EFI/BOOT/bootia32.efi
-0d721b154cab39de9c99d76d89b9b8ed  usr/lib/PinguyBuilder/EFI/BOOT/grubx64.efi
-cb488766c5df78258583f5ae354a3684  usr/lib/PinguyBuilder/EFI/BOOT/bootx64.efi
+7dc5588d483932c1215cc6ff785ceb36  usr/lib/PinguyBuilder/EFI/BOOT/grubx64.efi
 72789a40fa4737d6c4b8f81e56bbb450  usr/lib/PinguyBuilder/boot/memtest/memtest.bin
 a6a20b8c22ebb8851cb79ae1530c2564  usr/lib/PinguyBuilder/boot/memtest/memtest86+-5.01.bin
 8ae36a230b97f775096811e8e5d73af9  usr/lib/PinguyBuilder/boot/grub4dos/grub.exe
@@ -294,9 +294,9 @@ a0332ae10d19c219e955328e314f7fc3  usr/lib/PinguyBuilder/boot/grub/x86_64-efi/hal
 7ab1719ae33d2919b9eddfe5d1b5a1ca  usr/lib/PinguyBuilder/boot/grub/x86_64-efi/cat.mod
 afd052f9def132b5435b9f1c3c42cfea  usr/lib/PinguyBuilder/boot/grub/x86_64-efi/part_dfly.mod
 69f46fbe8d8cd5ae9a00d6aa6c3ad2db  usr/lib/PinguyBuilder/boot/grub/loopback.cfg
-046ca87abafb815646a0153a1dadef96  usr/lib/python2.7/dist-packages/PinguyBuildergtk/PinguyBuilder_gtk.py
+6939eb2d1fc831b0096f8505ae9c7a04  usr/lib/python2.7/dist-packages/PinguyBuildergtk/PinguyBuilder_gtk.py
 d41d8cd98f00b204e9800998ecf8427e  usr/lib/python2.7/dist-packages/PinguyBuildergtk/__init__.py
-104fec7498bfb6af552363afd996b3c1  usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/PKG-INFO
+e2a57dea3c2ea1b2776e55ff6a8da941  usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/PKG-INFO
 1fe7cb24d0da0149279d5232820b2936  usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/top_level.txt
 53eded0edb18ae5534be04e6004e2f92  usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/SOURCES.txt
 68b329da9893e34099c7d8ad5cb9c940  usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/dependency_links.txt
