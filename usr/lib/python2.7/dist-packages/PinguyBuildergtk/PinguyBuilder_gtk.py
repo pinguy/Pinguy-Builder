@@ -30,7 +30,7 @@ except:
 
 APP = "PinguyBuilder-gtk"
 DIR = "/usr/share/locale"
-APP_VERSION = "5.1-0"
+APP_VERSION = "5.1-1"
 
 locale.setlocale(locale.LC_ALL, '')
 gtk.glade.bindtextdomain(APP, DIR)
