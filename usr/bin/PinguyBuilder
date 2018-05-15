@@ -277,10 +277,12 @@ log_msg "Cleaning System before building"
     apt-get clean
     apt-get purge firefox-locale* --yes --assume-yes &> /dev/null
     rm -rf /opt/teamviewer/config/global.conf
+    #apt-get -y -q autoremove &> /dev/null
+    #dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs apt-get -y purge &> /dev/null
     #Removing swapfile
     swapoff -v /swapfile &> /dev/null
     rm /swapfile &> /dev/null
-    sed -i '/swapfile/d' /etc/fstab
+    sed -i '/swapfile/d' /etc/fstab &> /dev/null
 
 log_msg "Renaming Distro to $LIVECDLABEL"
     sed -i 's/PRETTY_NAME=.*/PRETTY_NAME="LIVECDLABEL"/g' /usr/lib/os-release
@@ -796,6 +798,7 @@ FOO
     log_msg "Removing the ubiquity frontend as it has been included and is not needed on the normal system"
     apt-get -y -q remove ubiquity-frontend-kde &> /dev/null
     apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
+    #apt-get --yes --assume-yes autoremove &> /dev/null
     rm -rf /root/apt.tar.gz
 
     sleep 1
