@@ -42,6 +42,7 @@ do_start() {
             tar -xf /root/apt.tar.gz -C /
             rm -rf /root/apt.tar.gz
             apt-get update
+            apt-get -y -q purge firefox-locale-en
             #Place your custom commands below this line
             #Example to remove PinguyBuilder and clean up packages
 
@@ -275,7 +276,7 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
 
 log_msg "Cleaning System before building"
     apt-get clean
-    apt-get purge firefox-locale* --yes --assume-yes &> /dev/null
+    apt-get purge firefox-locale-en --yes --assume-yes &> /dev/null
     rm -rf /opt/teamviewer/config/global.conf
     #apt-get -y -q autoremove &> /dev/null
     #dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs apt-get -y purge &> /dev/null
