@@ -41,8 +41,8 @@ do_start() {
             rm -r /etc/apt
             tar -xf /root/apt.tar.gz -C /
             rm -rf /root/apt.tar.gz
-            apt-get update
             apt-get -y -q purge firefox-locale-en
+            update-apt-xapian-index -vf
             #Place your custom commands below this line
             #Example to remove PinguyBuilder and clean up packages
 
@@ -254,16 +254,14 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
         apt-get -y -q install ubiquity-frontend-kde &> /dev/null
         apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
         chmod +x /usr/share/applications/kde4/ubiquity-kdeui.desktop &> /dev/null
-        sed -i 's/\Exec=.*/Exec=/' /usr/share/applications/kde4/ubiquity-kdeui.desktop
-        sed -i "s#Exec=#Exec=/etc/PinguyBuilder/scripts/kde#" /usr/share/applications/kde4/ubiquity-kdeui.desktop
+        sed -i "s/ubiquity kde_ui/pkexec ubiquity kde_ui/" /usr/share/applications/kde4/ubiquity-kdeui.desktop
     else
         log_msg "Installing the Ubiquity GTK frontend"
         apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
         apt-get -y -q install ubiquity-frontend-gtk &> /dev/null
         apt-get -y -q remove ubiquity-frontend-kde &> /dev/null
         chmod +x /usr/share/applications/ubiquity.desktop &> /dev/null
-        sed -i 's/\Exec=.*/Exec=/' /usr/share/applications/ubiquity.desktop
-        sed -i "s#Exec=#Exec=/etc/PinguyBuilder/scripts/gtk#" /usr/share/applications/ubiquity.desktop
+        sed -i "s/sh -c 'ubiquity gtk_ui'/pkexec ubiquity gtk_ui/" /usr/share/applications/ubiquity.desktop
     fi
 
     # Replacing Ubiquity icons
@@ -384,12 +382,19 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     sed -i "s/LIVECDLABEL/$LIVECDLABEL/g" $WORKDIR/dummysys/etc/default/grub
 
     #Creating startup script so the installer is marked as 'Trusted' on the desktop
-    touch /etc/rc.local
+    touch $WORKDIR/dummysys/etc/rc.local
     echo "#!/bin/sh" >> $WORKDIR/dummysys/etc/rc.local
     echo "sudo -i -u $LIVEUSER dbus-run-session -- gio set /home/$LIVEUSER/Desktop/ubiquity.desktop metadata::trusted yes" >> $WORKDIR/dummysys/etc/rc.local
     echo "exit 0" >> $WORKDIR/dummysys/etc/rc.local
     chmod 755 $WORKDIR/dummysys/etc/rc.local
     chmod +x $WORKDIR/dummysys/etc/rc.local
+
+    #Creating Network Update Script
+    touch $WORKDIR/dummysys/etc/network/if-up.d/update
+    echo "#!/bin/sh" >> $WORKDIR/dummysys/etc/network/if-up.d/update
+    echo "apt-get update" >> $WORKDIR/dummysys/etc/network/if-up.d/update
+    chmod 755 $WORKDIR/dummysys/etc/network/if-up.d/update
+    chmod +x $WORKDIR/dummysys/etc/network/if-up.d/update
 
     log_msg "Cleaning up files not needed for the live in $WORKDIR/dummysys"
     rm -rf $WORKDIR/dummysys/etc/apt/sources.list.d/*.save &> /dev/null
@@ -398,6 +403,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     rm -rf $WORKDIR/dummysys/var/lib/apt/lists/* -vf &> /dev/null
     rm -rf $WORKDIR/dummysys/var/lib/apt/lists/lock &> /dev/null
     find $WORKDIR/dummysys/var/cache/apt -type f -exec rm -rf '{}' \; &> /dev/null
+    find $WORKDIR/dummysys/var/cache/apt-xapian-index -type f -exec rm -rf '{}' \; &> /dev/null
     find $WORKDIR/dummysys/var/lib/apt -type f -exec rm -rf '{}' \; &> /dev/null
     rm -rf $WORKDIR/dummysys/var/lib/ureadahead/pack &> /dev/null
     rm -f $WORKDIR/dummysys/etc/X11/xorg.conf*
