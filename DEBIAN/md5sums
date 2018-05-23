@@ -1,9 +1,7 @@
 983424f6b5010acc06da4dc2e57a6192  etc/PinguyBuilder/mdm/mdm.conf
 f3d86357a97538f4074fbce2175ed0a6  etc/PinguyBuilder/preseed/custom.seed
-bab4af0171c255daf24972636ffa5e6b  etc/PinguyBuilder/scripts/gtk
-b91c746079cd84ca08ff700a7d74e164  etc/PinguyBuilder/scripts/kde
 d54b2eb381943d0664a7375ded170ce2  etc/PinguyBuilder/scripts/logo
-b756ed06c56f805d7b59f4336da32e3a  etc/PinguyBuilder/PinguyBuilder.version
+7bd6d6920308e904863dc535f8cd3bf0  etc/PinguyBuilder/PinguyBuilder.version
 ee0d58fd993b6f31b5e34123ddca2b3b  etc/PinguyBuilder/isolinux/isolinux.cfg.vesamenu
 1457efc9b2499eec7d6bada6bcf076b7  etc/PinguyBuilder/isolinux/splash.png
 1859f86780ee93902c44b69b785245ab  etc/PinguyBuilder/grub.ucf-dist
@@ -44,7 +42,7 @@ df4a34fa5b6cd61908fd176d23047dd2  usr/share/icons/hicolor/32x32/apps/PinguyBuild
 21d238ae2cbe28e0e6be4feae7f7f03c  usr/share/doc/PinguyBuilder/copyright
 6da37846d249491b8286fbb1cf00b3d7  usr/share/lintian/overrides/pinguybuilder
 53d1437e1fbf3663ae32f71ab145a102  usr/bin/PinguyBuilder-gtk
-ce2530597949b247ffac3836ef7a5f73  usr/bin/PinguyBuilder
+b1eb9c71b10a4bc7f0534ba96fd3da84  usr/bin/PinguyBuilder
 3687f43f13d277c8dc95a29ffda91ad6  usr/bin/PinguyBuilder-skelcopy
 d4478ae7afc82d34c317576f57be78fe  usr/bin/plymouth-preview
 6e94c3d33194c89bd327bfaa5871e294  usr/lib/PinguyBuilder/EFI/BOOT/BOOTx64.EFI
@@ -55,7 +53,7 @@ a6a20b8c22ebb8851cb79ae1530c2564  usr/lib/PinguyBuilder/boot/memtest/memtest86+-
 8ae36a230b97f775096811e8e5d73af9  usr/lib/PinguyBuilder/boot/grub4dos/grub.exe
 fcec9e82177c23864a91d896aef261df  usr/lib/PinguyBuilder/boot/grub4dos/g2ldr
 87619e2d80fa7c93bc7a5a2adc70ed03  usr/lib/PinguyBuilder/boot/grub/efi.img
-3632d54ed5c4cd060a0f3b918a847d1d  usr/lib/PinguyBuilder/boot/grub/grub.cfg
+ff9985accc43699d6e7c2c1fc0581686  usr/lib/PinguyBuilder/boot/grub/grub.cfg
 a28976a8bd8a9b2ec722556058cd7f01  usr/lib/PinguyBuilder/boot/grub/font.pf2
 d560df0418ccb0f6dcd5d27ba6331bec  usr/lib/PinguyBuilder/boot/grub/x86_64-efi/command.lst
 e97b61b1dc7d28047faa90fcb169b31b  usr/lib/PinguyBuilder/boot/grub/x86_64-efi/png.mod
@@ -295,10 +293,10 @@ cb455d1967d9ed946d35ad7951e97424  usr/lib/PinguyBuilder/boot/grub/x86_64-efi/udf
 a0332ae10d19c219e955328e314f7fc3  usr/lib/PinguyBuilder/boot/grub/x86_64-efi/halt.mod
 7ab1719ae33d2919b9eddfe5d1b5a1ca  usr/lib/PinguyBuilder/boot/grub/x86_64-efi/cat.mod
 afd052f9def132b5435b9f1c3c42cfea  usr/lib/PinguyBuilder/boot/grub/x86_64-efi/part_dfly.mod
-69f46fbe8d8cd5ae9a00d6aa6c3ad2db  usr/lib/PinguyBuilder/boot/grub/loopback.cfg
-2be4675fc43b7917c04f8252a81681d9  usr/lib/python2.7/dist-packages/PinguyBuildergtk/PinguyBuilder_gtk.py
+d408c4ee2cd0648b09c5c53deb02f825  usr/lib/PinguyBuilder/boot/grub/loopback.cfg
+50f846f091fe76f71da40ef359dcd4cc  usr/lib/python2.7/dist-packages/PinguyBuildergtk/PinguyBuilder_gtk.py
 d41d8cd98f00b204e9800998ecf8427e  usr/lib/python2.7/dist-packages/PinguyBuildergtk/__init__.py
-7a01887c2a10e315ee594a5be31e0668  usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/PKG-INFO
+80f1d0644093eb2d7dd69649108733d9  usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/PKG-INFO
 1fe7cb24d0da0149279d5232820b2936  usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/top_level.txt
 53eded0edb18ae5534be04e6004e2f92  usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/SOURCES.txt
 68b329da9893e34099c7d8ad5cb9c940  usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/dependency_links.txt
