@@ -41,7 +41,7 @@ do_start() {
             rm -r /etc/apt
             tar -xf /root/apt.tar.gz -C /
             rm -rf /root/apt.tar.gz
-            apt-get -y -q purge firefox-locale-en
+            apt-get -y -q purge firefox-locale-en libreoffice-help-en-*
             update-apt-xapian-index -vf
             #Place your custom commands below this line
             #Example to remove PinguyBuilder and clean up packages
@@ -276,10 +276,10 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
 
 log_msg "Cleaning System before building"
     apt-get clean
-    apt-get purge firefox-locale-en --yes --assume-yes &> /dev/null
     rm -rf /opt/teamviewer/config/global.conf
     #apt-get -y -q autoremove &> /dev/null
     #dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs apt-get -y purge &> /dev/null
+    apt-get -y -q purge firefox-locale-* hunspell-* language-pack-gnome-* libreoffice-help-* libreoffice-l10n-* mythes-* &> /dev/null
     #Removing swapfile
     swapoff -v /swapfile &> /dev/null
     rm /swapfile &> /dev/null
@@ -808,6 +808,7 @@ FOO
     apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
     #apt-get --yes --assume-yes autoremove &> /dev/null
     rm -rf /root/apt.tar.gz
+    apt-get install -y $(check-language-support) &> /dev/null
 
     sleep 1
 
