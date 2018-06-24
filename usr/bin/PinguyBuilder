@@ -214,7 +214,7 @@ cdfs (){
 find /etc/apt -type f -iname \*.save -delete &> /dev/null
 find /etc/apt -type f -iname \*~ -delete &> /dev/null
 tar pczvf /root/apt.tar.gz /etc/apt &> /dev/null
-sed -i "s/deb/#deb/g" /etc/apt/sources.list.d/official-package-repositories.list &> /dev/null
+sed -i "s/deb/#deb/g" /etc/apt/sources.list.d/*.list &> /dev/null
     apt-get update  &> /dev/null
 
 log_msg "Enabling PinguyBuilder-firstboot"
@@ -272,7 +272,8 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
     chmod 777 /usr/share/icons/ubuntu-logo-icon.png
     gtk-update-icon-cache
     update-icon-caches /usr/share/icons/*
-    sed -i "s/#deb/deb/g" /etc/apt/sources.list.d/official-package-repositories.list &> /dev/null
+    rm -r /etc/apt &> /dev/null
+    tar -xf /root/apt.tar.gz -C / &> /dev/null
 
 log_msg "Cleaning System before building"
     apt-get clean
