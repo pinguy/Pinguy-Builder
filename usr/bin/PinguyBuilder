@@ -214,7 +214,15 @@ cdfs (){
 find /etc/apt -type f -iname \*.save -delete &> /dev/null
 find /etc/apt -type f -iname \*~ -delete &> /dev/null
 tar pczvf /root/apt.tar.gz /etc/apt &> /dev/null
-sed -i "s/deb/#deb/g" /etc/apt/sources.list.d/*.list &> /dev/null
+sed -i "s/deb/#deb/g" /etc/apt/sources.list.d/*.list
+sed -i "s/deb/#deb/g" /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu bionic main restricted" >> /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu bionic universe" >> /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list
+echo "deb http://archive.canonical.com/ubuntu bionic partner" >> /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted" >> /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu bionic-security universe" >> /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu bionic-security multiverse" >> /etc/apt/sources.list
     apt-get update  &> /dev/null
 
 log_msg "Enabling PinguyBuilder-firstboot"
@@ -250,6 +258,9 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
 
     if [ "`ps axf | grep startkde | grep -v grep`" != "" -o "`ps axf | grep kwin | grep -v grep`" != "" ]; then
         log_msg "Installing the Ubiquity KDE frontend"
+        apt-get -y -q purge ubiquity-casper &> /dev/null
+        apt-get -y -q purge ubiquity &> /dev/null
+        apt-get -y -q remove ubiquity-ubuntu-artwork &> /dev/null
         apt-get -y -q remove ubiquity-frontend-kde &> /dev/null
         apt-get -y -q install ubiquity-frontend-kde &> /dev/null
         apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
@@ -257,6 +268,9 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
         sed -i "s/ubiquity kde_ui/pkexec ubiquity kde_ui/" /usr/share/applications/kde4/ubiquity-kdeui.desktop
     else
         log_msg "Installing the Ubiquity GTK frontend"
+        apt-get -y -q purge ubiquity-casper &> /dev/null
+        apt-get -y -q purge ubiquity &> /dev/null
+        apt-get -y -q remove ubiquity-ubuntu-artwork &> /dev/null
         apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
         apt-get -y -q install ubiquity-frontend-gtk &> /dev/null
         apt-get -y -q remove ubiquity-frontend-kde &> /dev/null
@@ -375,12 +389,22 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     DISKINFONAME=`echo $LIVECDLABEL | awk '{print $1}'`
     log_msg "Adding CD-ROM to source list"
     . /etc/lsb-release
+    sed -i "s/deb/#deb/g" $WORKDIR/dummysys/etc/apt/sources.list
     sed -i '/cdrom:/d' $WORKDIR/dummysys/etc/apt/sources.list &> /dev/null
     echo "deb cdrom:[$DISKINFONAME $DISTRIB_RELEASE - Release $ARCH]/ dists/" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "deb http://archive.ubuntu.com/ubuntu bionic main restricted" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "deb http://archive.ubuntu.com/ubuntu bionic universe" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "deb http://archive.ubuntu.com/ubuntu bionic-backports main restricted universe multiverse" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "deb http://archive.canonical.com/ubuntu bionic partner" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "deb http://archive.ubuntu.com/ubuntu bionic-security universe" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "deb http://archive.ubuntu.com/ubuntu bionic-security multiverse" >> $WORKDIR/dummysys/etc/apt/sources.list
 
-    #Copying grub config
-    cp /etc/PinguyBuilder/grub.ucf-dist $WORKDIR/dummysys/etc/default/grub
-    sed -i "s/LIVECDLABEL/$LIVECDLABEL/g" $WORKDIR/dummysys/etc/default/grub
+    #renaming grub config
+    sed -i "s/GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR=\"$LIVECDLABEL\"/g" $WORKDIR/dummysys/etc/default/grub
+    chmod 777 $WORKDIR/dummysys/etc/lsb-release
+    sed -i '/DISTRIB_DESCRIPTION/d' $WORKDIR/dummysys/etc/lsb-release &> /dev/null
+    echo "DISTRIB_DESCRIPTION=\"$LIVECDLABEL\"" >> /home/PinguyBuilder/PinguyBuilder/dummysys/etc/lsb-release
 
     #Creating startup script so the installer is marked as 'Trusted' on the desktop
     touch $WORKDIR/dummysys/etc/rc.local
@@ -544,9 +568,9 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     mkdir -p $WORKDIR/ISOTMP/pool
       cd $WORKDIR/ISOTMP/pool
     if [ "$ARCH" = "amd64" ] ; then
-    apt-get download b43-fwcutter bcmwl-kernel-source efibootmgr grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-amd64-signed grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub-pc grub2-common grub-gfxpayload-lists mokutil secureboot-db shim shim-signed &> /dev/null
+    apt-get download b43-fwcutter bcmwl-kernel-source efibootmgr grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-amd64-signed grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub-pc grub2-common grub-gfxpayload-lists mokutil os-prober secureboot-db shim shim-signed &> /dev/null
     else
-    apt-get download b43-fwcutter bcmwl-kernel-source efibootmgr grub-common grub-efi grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub-pc grub2-common grub-gfxpayload-lists mokutil secureboot-db &> /dev/null
+    apt-get download b43-fwcutter bcmwl-kernel-source efibootmgr grub-common grub-efi grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub-pc grub2-common grub-gfxpayload-lists mokutil os-prober secureboot-db &> /dev/null
     fi
      mkdir -p $WORKDIR/ISOTMP/dists
      cd $WORKDIR/ISOTMP/
@@ -745,7 +769,7 @@ FOO
 
     fi
 
-    mksquashfs $REALFOLDERS $WORKDIR/ISOTMP/casper/filesystem.squashfs -no-duplicates $SQUASHFSOPTS -e /boot/efi/EFI /boot/grub $BASEWORKDIR $EXCLUDES 2>>$WORKDIR/PinguyBuilder.log
+    mksquashfs $REALFOLDERS $WORKDIR/ISOTMP/casper/filesystem.squashfs $SQUASHFSOPTS -e /boot/efi/EFI /boot/grub $BASEWORKDIR $EXCLUDES 2>>$WORKDIR/PinguyBuilder.log
 
 
     sleep 1
@@ -807,6 +831,7 @@ FOO
     log_msg "Removing the ubiquity frontend as it has been included and is not needed on the normal system"
     apt-get -y -q remove ubiquity-frontend-kde &> /dev/null
     apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
+    apt-get -y -q remove ubiquity-ubuntu-artwork &> /dev/null
     #apt-get --yes --assume-yes autoremove &> /dev/null
     rm -rf /root/apt.tar.gz
     apt-get install -y $(check-language-support) &> /dev/null
