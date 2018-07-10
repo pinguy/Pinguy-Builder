@@ -399,6 +399,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     echo "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted" >> $WORKDIR/dummysys/etc/apt/sources.list
     echo "deb http://archive.ubuntu.com/ubuntu bionic-security universe" >> $WORKDIR/dummysys/etc/apt/sources.list
     echo "deb http://archive.ubuntu.com/ubuntu bionic-security multiverse" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "deb http://packages.linuxmint.com/ tara main upstream import backport romeo" >> $WORKDIR/dummysys/etc/apt/sources.list
 
     #renaming grub config
     sed -i "s/GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR=\"$LIVECDLABEL\"/g" $WORKDIR/dummysys/etc/default/grub
