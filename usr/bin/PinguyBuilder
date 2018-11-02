@@ -55,10 +55,10 @@ do_start() {
             return \$ES
         fi
 
-        
 
 
-} 
+
+}
 
 case "\$1" in
     start)
@@ -81,14 +81,14 @@ FOO
 fi
 
 
-# load the PinguyBuilder.conf file 
+# load the PinguyBuilder.conf file
 . /etc/PinguyBuilder.conf
 
 # if the PinguyBuilder.conf file is incorrect or missing, make sure to set defaults
 
 if [ "$LIVEUSER" = "" ]; then
     #Somebody must have removed the username from the configuration file
-    echo 
+    echo
     #this is a custom live user
     LIVEUSER="custom"
 fi
@@ -114,7 +114,7 @@ fi
 
 touch $WORKDIR/PinguyBuilder.log
 
-#added log_msg to reduce size. code provided by Ivailo (a.k.a. SmiL3y) 
+#added log_msg to reduce size. code provided by Ivailo (a.k.a. SmiL3y)
 log_msg() {
     echo "$1"
     echo "$1" >>$WORKDIR/PinguyBuilder.log
@@ -187,7 +187,7 @@ case $1  in
         echo "   sudo PinguyBuilder backup   (to make a livecd/dvd backup of your system)"
         echo " "
         echo "   sudo PinguyBuilder backup custom.iso"
-        echo "                             (to make a livecd/dvd backup and call the iso custom.iso)" 
+        echo "                             (to make a livecd/dvd backup and call the iso custom.iso)"
         echo " "
         echo "   sudo PinguyBuilder clean    (to clean up temporary files of PinguyBuilder)"
         echo " "
@@ -562,7 +562,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
 
     #Downloading packages for offline install
     log_msg "Downloading packages for CD"
-    
+
     # Check Architecture
     ARCH=`archdetect | awk -F "/" '{print $1}'`
 
@@ -577,22 +577,22 @@ log_msg "Renaming Distro to $LIVECDLABEL"
      cd $WORKDIR/ISOTMP/
     dpkg-scanpackages pool /dev/null | gzip -9c > dists/Packages.gz
 
-    # check and see if they have a custom isolinux already setup. eg. they copied over 
+    # check and see if they have a custom isolinux already setup. eg. they copied over
     # the isolinux folder from their original livecd or made a custom one for their distro
 
     if [ ! -f /etc/PinguyBuilder/customisolinux/isolinux.cfg ]; then
         log_msg "Creating isolinux setup for the live system"
         find /usr -name 'isolinux.bin' -exec cp {} $WORKDIR/ISOTMP/isolinux/ \;
         #find fix for vesamenu.32 provided by Krasimir S. Stefanov <lokiisyourmaster@gmail.com>
-        VESAMENU=`find /usr -print0 | grep -FzZ "bios/vesamenu.c32"`
-        cp $VESAMENU $WORKDIR/ISOTMP/isolinux/ 
-        LDLINUX=`find /usr -print0 | grep -FzZ "bios/ldlinux.c32"`
+        VESAMENU=`find /usr -print0 | grep -FzZ "bios/vesamenu.c32" | tr '\0' '\n'`
+        cp $VESAMENU $WORKDIR/ISOTMP/isolinux/
+        LDLINUX=`find /usr -print0 | grep -FzZ "bios/ldlinux.c32" | tr '\0' '\n'`
         cp $LDLINUX $WORKDIR/ISOTMP/isolinux/
-        LIBUTIL=`find /usr -print0 | grep -FzZ "bios/libutil.c32"`
+        LIBUTIL=`find /usr -print0 | grep -FzZ "bios/libutil.c32" | tr '\0' '\n'`
         cp $LIBUTIL $WORKDIR/ISOTMP/isolinux/
-        LIBCOM=`find /usr -print0 | grep -FzZ "bios/libcom32.c32"`
+        LIBCOM=`find /usr -print0 | grep -FzZ "bios/libcom32.c32" | tr '\0' '\n'`
         cp $LIBCOM $WORKDIR/ISOTMP/isolinux/
-        MENU=`find /usr -print0 | grep -FzZ "bios/menu.c32"`
+        MENU=`find /usr -print0 | grep -FzZ "bios/menu.c32" | tr '\0' '\n'`
         cp $MENU $WORKDIR/ISOTMP/isolinux/
         # setup isolinux for the livecd
         VERSION=`lsb_release -r | awk '{print $2}' | awk -F "." '{print $1}'`
@@ -839,7 +839,7 @@ FOO
 
     sleep 1
 
-    #checking the size of the compressed filesystem to ensure it meets the iso9660 spec for a single file" 
+    #checking the size of the compressed filesystem to ensure it meets the iso9660 spec for a single file"
     SQUASHFSSIZE=`ls -s $WORKDIR/ISOTMP/casper/filesystem.squashfs | awk -F " " '{print $1}'`
     if [ "$SQUASHFSSIZE" -gt "3999999" ]; then
         log_msg "The compressed filesystem is larger than genisoimage allows for a single file. You must try to reduce the amount of data you are backing up and try again."
@@ -913,7 +913,7 @@ iso (){
         log_msg "The iso was not created. There was a problem. Exiting"
         exit 1
     fi
-    
+
     # Make the iso hybrid so it can be simply dd copied to a usb flash drive.
     log_msg "Making $CUSTOMISO a hybrid iso"
     isohybrid --uefi $WORKDIR/$CUSTOMISO
