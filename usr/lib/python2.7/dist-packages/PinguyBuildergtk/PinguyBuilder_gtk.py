@@ -149,7 +149,7 @@ class Appgui:
         self.builder.get_object("notebook_window_main").set_current_page(0)
         self.v.handler_disconnect(self.callback_id)
         
-    def on_button_distfs_clicked(self,widget):
+    def on_button_distfs_clicked(self, widget):
         self.update_conf()
         if not msg_confirm(_("You have selected Dist CDFS Mode. Click OK to Start the Distributable LiveCD/DVD "
                              "filesystem build process."), self.window_main):
@@ -303,12 +303,11 @@ https://www.dbad-license.org/.''')
             grub_bg = "/etc/PinguyBuilder/grub" + ext
             shutil.copy(filename, grub_bg)
             dialog.destroy()
-            
-            
+
             grub = open('/etc/PinguyBuilder/grub.ucf-dist').read()
             
             m = re.search('(#?)GRUB_BACKGROUND=.*', grub)
-            if m != None:
+            if m is not None:
                 grub.replace(m.group(0), 'GRUB_BACKGROUND="%s"' % grub_bg)
             else:
                 grub += '\nGRUB_BACKGROUND="%s"' % grub_bg
@@ -323,7 +322,7 @@ https://www.dbad-license.org/.''')
             self.builder.get_object("label_boot_picture_installed").hide()
             self.builder.get_object("progressbar_boot_picture_installed").show()
             process = subprocess.Popen(['update-grub'], stdout=subprocess.PIPE, stderr=None)
-            while process.poll() == None:
+            while process.poll() is None:
                 while Gtk.events_pending():
                     Gtk.main_iteration_do(False)
                 time.sleep(.1) 
@@ -335,7 +334,7 @@ https://www.dbad-license.org/.''')
         else:
             dialog.destroy()
 
-    #BEGIN USER SKELETON HANDLERS
+    # BEGIN USER SKELETON HANDLERS
     def on_button_user_skel_clicked(self, widget):
         self.builder.get_object("window_main").hide()
 
@@ -354,12 +353,11 @@ https://www.dbad-license.org/.''')
 
         self.builder.get_object("treeview_user_skeleton").append_column(_tvcolumn1)
         self.builder.get_object("treeview_user_skeleton").append_column(_tvcolumn2)
-        
 
         passwd = open('/etc/passwd', 'r').read().strip().split('\n')
         for row in passwd:
             data = row.split(':')
-            if int(data[2]) >= 1000 and int(data[2]) <= 1100:
+            if 1000 <= int(data[2]) <= 1100:
                 _liststore.append([data[0], data[5]])
         self.builder.get_object("window_user_skeleton").show()
 
@@ -418,7 +416,7 @@ https://www.dbad-license.org/.''')
         uname = os.popen('uname -r').read().strip()
         process = subprocess.Popen(['mkinitramfs', '-o', '/boot/initrd.img-' + uname, uname], stdout=subprocess.PIPE,
                                    stderr=None)
-        while process.poll() == None:
+        while process.poll() is None:
             while Gtk.events_pending():
                 Gtk.main_iteration_do(False)
             time.sleep(.1)
@@ -431,7 +429,7 @@ https://www.dbad-license.org/.''')
         self._liststore.clear()
         output = os.popen('update-alternatives --display default.plymouth').read().strip()
         m = re.search(_('default.plymouth - (manual|auto) mode'), output)
-        if m == None:
+        if m is None:
             self.builder.get_object("window_plymouth").show()
             return
         mode = m.group(1)
@@ -459,7 +457,7 @@ https://www.dbad-license.org/.''')
 
         output = os.popen('update-alternatives --display default.plymouth').read().strip()
         m = re.search(_('default.plymouth - (manual|auto) mode'), output)
-        if m == None:
+        if m is None:
             self.builder.get_object("window_plymouth").show()
             return
         mode = m.group(1)
@@ -506,7 +504,7 @@ https://www.dbad-license.org/.''')
         theme_name = msg_input('', _(
             'Enter your plymouth theme name. eg. PinguyBuilder Theme (please use only alphanumeric characters)'),
                                _('Name:'), 'PinguyBuilder Theme', self.window_main)
-        if theme_name == False or theme_name == None:
+        if theme_name is False or theme_name is None:
             return
         elif theme_name == '':
             msg_error(_("You must specify theme name!"), self.window_main)
@@ -592,7 +590,7 @@ https://www.dbad-license.org/.''')
             msg_info(_("Done! Now plymouth will use the default, auto-selected theme."), self.window_main)
         else:
             model, treeiter = self.builder.get_object("treeview_themes").get_selection().get_selected()
-            if treeiter == None:
+            if treeiter is None:
                 msg_error(_("Please, select a theme!"), self.window_main)
                 return
             theme = model.get(treeiter, 1)[0]
@@ -645,11 +643,19 @@ https://www.dbad-license.org/.''')
         self.builder.get_object("checkbutton_show_backup_icon").set_active(
             self.getvalue('BACKUPSHOWINSTALL', config_txt, '1').upper() == '1')
 
+        self.builder.get_object("textview_sources_list").get_buffer().set_text(
+            self.getvalue('SOURCESLIST', config_txt, '')
+        )
+
     def update_conf(self):
         if self.builder.get_object("checkbutton_show_backup_icon").get_active():
             BACKUPSHOWINSTALL = '1'
         else:
             BACKUPSHOWINSTALL = '0'
+
+        BUFFER = self.builder.get_object("textview_sources_list").get_buffer()
+        start_iter = BUFFER.get_start_iter()
+        end_iter = BUFFER.get_end_iter()
             
         conf_content = '''
 #PinguyBuilder Global Configuration File
@@ -685,6 +691,10 @@ BACKUPSHOWINSTALL="%(BACKUPSHOWINSTALL)s"
 
 # Here you can change the url for the usb-creator info
 LIVECDURL="%(LIVECDURL)s"
+
+
+# Here you can change the sources list for the current linux distro (default ubuntu 18.04.2 LTS)
+SOURCESLIST="%(SOURCESLIST)s"
 ''' % ({
         "WORKDIR" : self.builder.get_object("entry_working_directory").get_text(),
         "EXCLUDES" : self.builder.get_object("entry_exclude").get_text(),
@@ -693,16 +703,17 @@ LIVECDURL="%(LIVECDURL)s"
         "CUSTOMISO" : self.builder.get_object("entry_filename").get_text(),
         "SQUASHFSOPTS" : self.builder.get_object("entry_squashfs_options").get_text(),
         "BACKUPSHOWINSTALL" : BACKUPSHOWINSTALL,
-        "LIVECDURL" : self.builder.get_object("entry_url_usb_creator").get_text()
+        "LIVECDURL" : self.builder.get_object("entry_url_usb_creator").get_text(),
+        "SOURCESLIST": BUFFER.get_text(start_iter, end_iter, True)
         })
-        
+
         conf = open(self.conffile, 'w+')
         conf.write(conf_content)
         conf.close()
         
     def getvalue(self, name, conf, default):
         try:
-            m = re.search(name+'="(.*)"',conf)
+            m = re.search(name+'="([^"]*)"', conf)
             return m.group(1)
         except:
             return default
@@ -800,7 +811,7 @@ if os.popen('whoami').read().strip() != 'root':
         else:
             os.system('gksu -D "%s" python ./PinguyBuilder_Gtk.py' % '/usr/share/applications/PinguyBuilder-Gtk.desktop')
     elif os.system('which kdesudo') == 0:
-        os.system('kdesudo ./PinguyBuilder_Gtk.py' )
+        os.system('kdesudo ./PinguyBuilder_Gtk.py')
     elif os.system('which sudo') == 0:
         password = msg_input(_(''),
                              _('Enter your password to perform administrative tasks'), 'Password:', '', None, True)

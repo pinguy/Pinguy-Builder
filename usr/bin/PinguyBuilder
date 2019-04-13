@@ -158,6 +158,20 @@ if [ "$CUSTOMISO" = "" ]; then
     CUSTOMISO="custom$1.iso"
 fi
 
+if [ "$SOURCESLIST" = "" ]; then
+    SOURCESLIST="deb http://archive.ubuntu.com/ubuntu bionic main restricted
+deb http://archive.ubuntu.com/ubuntu bionic universe
+deb http://archive.ubuntu.com/ubuntu bionic-backports main restricted universe multiverse
+deb http://archive.canonical.com/ubuntu bionic partner
+deb http://archive.ubuntu.com/ubuntu bionic-security main restricted
+deb http://archive.ubuntu.com/ubuntu bionic-security universe
+deb http://archive.ubuntu.com/ubuntu bionic-security multiverse
+## Major bug fix updates produced after the final release of the distribution.
+deb http://archive.ubuntu.com/ubuntu bionic-updates main restricted
+deb http://archive.ubuntu.com/ubuntu bionic-updates universe
+deb http://archive.ubuntu.com/ubuntu bionic-updates multiverse"
+fi
+
 case $1  in
 
     backup)
@@ -216,13 +230,7 @@ find /etc/apt -type f -iname \*~ -delete &> /dev/null
 tar pczvf /root/apt.tar.gz /etc/apt &> /dev/null
 sed -i "s/deb/#deb/g" /etc/apt/sources.list.d/*.list
 sed -i "s/deb/#deb/g" /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic main restricted" >> /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic universe" >> /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list
-echo "deb http://archive.canonical.com/ubuntu bionic partner" >> /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted" >> /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic-security universe" >> /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic-security multiverse" >> /etc/apt/sources.list
+echo "$SOURCESLIST" >> /etc/apt/sources.list
     apt-get update  &> /dev/null
 
 log_msg "Enabling PinguyBuilder-firstboot"
@@ -392,14 +400,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     sed -i "s/deb/#deb/g" $WORKDIR/dummysys/etc/apt/sources.list
     sed -i '/cdrom:/d' $WORKDIR/dummysys/etc/apt/sources.list &> /dev/null
     echo "deb cdrom:[$DISKINFONAME $DISTRIB_RELEASE - Release $ARCH]/ dists/" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic main restricted" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic universe" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic-backports main restricted universe multiverse" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.canonical.com/ubuntu bionic partner" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic-security universe" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic-security multiverse" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://packages.linuxmint.com/ tara main upstream import backport romeo" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "$SOURCESLIST" >> $WORKDIR/dummysys/etc/apt/sources.list
 
     #renaming grub config
     sed -i "s/GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR=\"$LIVECDLABEL\"/g" $WORKDIR/dummysys/etc/default/grub
