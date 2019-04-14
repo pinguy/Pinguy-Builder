@@ -644,8 +644,13 @@ https://www.dbad-license.org/.''')
             self.getvalue('BACKUPSHOWINSTALL', config_txt, '1').upper() == '1')
 
         self.builder.get_object("textview_sources_list").get_buffer().set_text(
-            self.getvalue('SOURCESLIST', config_txt, '')
-        )
+            self.getvalue('SOURCESLIST', config_txt, ''))
+
+        self.builder.get_object("textview_success_command").get_buffer().set_text(
+            self.getvalue('SUCCESSCOMMAND', config_txt, ''))
+
+        self.builder.get_object("textview_first_boot_commands").get_buffer().set_text(
+            self.getvalue('FIRSTBOOTCOMMANDS', config_txt, ''))
 
     def update_conf(self):
         if self.builder.get_object("checkbutton_show_backup_icon").get_active():
@@ -653,9 +658,14 @@ https://www.dbad-license.org/.''')
         else:
             BACKUPSHOWINSTALL = '0'
 
-        BUFFER = self.builder.get_object("textview_sources_list").get_buffer()
-        start_iter = BUFFER.get_start_iter()
-        end_iter = BUFFER.get_end_iter()
+        _buffer = self.builder.get_object("textview_sources_list").get_buffer()
+        SOURCESLIST = _buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True)
+
+        _buffer = self.builder.get_object("textview_success_command").get_buffer()
+        SUCCESSCOMMAND = _buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True)
+
+        _buffer = self.builder.get_object("textview_first_boot_commands").get_buffer()
+        FIRSTBOOTCOMMANDS = _buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True)
             
         conf_content = '''
 #PinguyBuilder Global Configuration File
@@ -695,6 +705,13 @@ LIVECDURL="%(LIVECDURL)s"
 
 # Here you can change the sources list for the current linux distro (default ubuntu 18.04.2 LTS)
 SOURCESLIST="%(SOURCESLIST)s"
+
+
+# Here you can add custom command to run in ubiquity success command
+SUCCESSCOMMAND="%(SUCCESSCOMMAND)s"
+
+# Here you can add custom commands to run in PinguyBuilder-firstboot service
+FIRSTBOOTCOMMANDS="%(FIRSTBOOTCOMMANDS)s"
 ''' % ({
         "WORKDIR" : self.builder.get_object("entry_working_directory").get_text(),
         "EXCLUDES" : self.builder.get_object("entry_exclude").get_text(),
@@ -704,7 +721,9 @@ SOURCESLIST="%(SOURCESLIST)s"
         "SQUASHFSOPTS" : self.builder.get_object("entry_squashfs_options").get_text(),
         "BACKUPSHOWINSTALL" : BACKUPSHOWINSTALL,
         "LIVECDURL" : self.builder.get_object("entry_url_usb_creator").get_text(),
-        "SOURCESLIST": BUFFER.get_text(start_iter, end_iter, True)
+        "SOURCESLIST": SOURCESLIST,
+        "SUCCESSCOMMAND": SUCCESSCOMMAND,
+        "FIRSTBOOTCOMMANDS": FIRSTBOOTCOMMANDS,
         })
 
         conf = open(self.conffile, 'w+')
@@ -713,7 +732,7 @@ SOURCESLIST="%(SOURCESLIST)s"
         
     def getvalue(self, name, conf, default):
         try:
-            m = re.search(name+'="([^"]*)"', conf)
+            m = re.search(name+'="([^\\\\\\"]*(?:\\\\.[^\\\\\\"]*)*)"', conf)
             return m.group(1)
         except:
             return default
