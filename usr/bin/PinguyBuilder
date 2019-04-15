@@ -8,87 +8,14 @@ if [ "$(whoami)" != "root" ]; then
     exit 1
 fi
 
-#create PinguyBuilder-firstboot script if it doesn't exist and populate with at least removal of the ubiquity*.desktop file from users Desktop and fix for recovery mode
-fbtest=`grep "REM302" /etc/init.d/PinguyBuilder-firstboot`
-
-if [ "$fbtest" = "" ]; then
-    cat > /etc/init.d/PinguyBuilder-firstboot <<FOO
-#! /bin/sh
-### BEGIN INIT INFO
-# Provides:          PinguyBuilder-firstboot
-# Required-Start:    \$remote_fs \$syslog \$all
-# Required-Stop:
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Run firstboot items for PinguyBuilder after a remastered system has been installed
-### END INIT INFO
-
-PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin
-
-. /lib/init/vars.sh
-. /lib/lsb/init-functions
-
-do_start() {
-        #REM302
-        if [ "\`cat /proc/cmdline | grep casper\`" = "" ]; then
-            [ "\$VERBOSE" != no ] && log_begin_msg "Running PinguyBuilder-firstboot"
-            (sleep 60 && update-rc.d -f PinguyBuilder-firstboot remove) &
-            sed -i -e 's/root:x:/root:!:/g' /etc/shadow
-            rm -rf /home/*/*/ubiquity*.desktop
-            rm -rf /usr/share/applications/kde4/ubiquity-kdeui.desktop
-            rm -rf /usr/share/applications/ubiquity.desktop
-            rm -rf /etc/rc.local
-            rm -r /etc/apt
-            tar -xf /root/apt.tar.gz -C /
-            rm -rf /root/apt.tar.gz
-            apt-get -y -q purge firefox-locale-en libreoffice-help-en-*
-            update-apt-xapian-index -vf
-            #Place your custom commands below this line
-            #Example to remove PinguyBuilder and clean up packages
-
-            #apt-get purge pinguybuilder --yes --assume-yes
-            #apt-get --yes --assume-yes autoremove
-
-            #Place your custom commands above this line
-            ES=\$?
-            [ "\$VERBOSE" != no ] && log_end_msg \$ES
-            return \$ES
-        fi
-
-        
-
-
-} 
-
-case "\$1" in
-    start)
-        do_start
-        ;;
-    restart|reload|force-reload)
-        echo "Error: argument '\$1' not supported" >&2
-        exit 3
-        ;;
-    stop)
-        ;;
-    *)
-        echo "Usage: \$0 start|stop" >&2
-        exit 3
-        ;;
-esac
-
-FOO
-
-fi
-
-
-# load the PinguyBuilder.conf file 
+# load the PinguyBuilder.conf file
 . /etc/PinguyBuilder.conf
 
 # if the PinguyBuilder.conf file is incorrect or missing, make sure to set defaults
 
 if [ "$LIVEUSER" = "" ]; then
     #Somebody must have removed the username from the configuration file
-    echo 
+    echo
     #this is a custom live user
     LIVEUSER="custom"
 fi
@@ -114,7 +41,7 @@ fi
 
 touch $WORKDIR/PinguyBuilder.log
 
-#added log_msg to reduce size. code provided by Ivailo (a.k.a. SmiL3y) 
+#added log_msg to reduce size. code provided by Ivailo (a.k.a. SmiL3y)
 log_msg() {
     echo "$1"
     echo "$1" >>$WORKDIR/PinguyBuilder.log
@@ -158,6 +85,99 @@ if [ "$CUSTOMISO" = "" ]; then
     CUSTOMISO="custom$1.iso"
 fi
 
+if [ "$SOURCESLIST" = "" ]; then
+    SOURCESLIST="deb http://archive.ubuntu.com/ubuntu bionic main restricted
+deb http://archive.ubuntu.com/ubuntu bionic universe
+deb http://archive.ubuntu.com/ubuntu bionic-backports main restricted universe multiverse
+deb http://archive.canonical.com/ubuntu bionic partner
+deb http://archive.ubuntu.com/ubuntu bionic-security main restricted
+deb http://archive.ubuntu.com/ubuntu bionic-security universe
+deb http://archive.ubuntu.com/ubuntu bionic-security multiverse
+## Major bug fix updates produced after the final release of the distribution.
+deb http://archive.ubuntu.com/ubuntu bionic-updates main restricted
+deb http://archive.ubuntu.com/ubuntu bionic-updates universe
+deb http://archive.ubuntu.com/ubuntu bionic-updates multiverse"
+fi
+
+if [ "$SUCCESSCOMMAND" = "" ]; then
+    SUCCESSCOMMAND=""
+fi
+
+if [ "$FIRSTBOOTCOMMANDS" = "" ]; then
+    FIRSTBOOTCOMMANDS=""
+fi
+
+#create PinguyBuilder-firstboot script if it doesn't exist and populate with at least removal of the ubiquity*.desktop file from users Desktop and fix for recovery mode
+fbtest=`grep "REM302" /etc/init.d/PinguyBuilder-firstboot`
+
+if [ "$fbtest" = "" ]; then
+    cat > /etc/init.d/PinguyBuilder-firstboot <<FOO
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          PinguyBuilder-firstboot
+# Required-Start:    \$remote_fs \$syslog \$all
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Run firstboot items for PinguyBuilder after a remastered system has been installed
+### END INIT INFO
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin
+
+. /lib/init/vars.sh
+. /lib/lsb/init-functions
+
+do_start() {
+        #REM302
+        if [ "\`cat /proc/cmdline | grep casper\`" = "" ]; then
+            [ "\$VERBOSE" != no ] && log_begin_msg "Running PinguyBuilder-firstboot"
+            (sleep 60 && update-rc.d -f PinguyBuilder-firstboot remove) &
+            sed -i -e 's/root:x:/root:!:/g' /etc/shadow
+            rm -rf /home/*/*/ubiquity*.desktop
+            rm -rf /usr/share/applications/kde4/ubiquity-kdeui.desktop
+            rm -rf /usr/share/applications/ubiquity.desktop
+            rm -rf /etc/rc.local
+            rm -r /etc/apt
+            tar -xf /root/apt.tar.gz -C /
+            rm -rf /root/apt.tar.gz
+            apt-get -y -q purge firefox-locale-en libreoffice-help-en-*
+            update-apt-xapian-index -vf
+            #Place your custom commands below this line
+            #Example to remove PinguyBuilder and clean up packages
+
+            #apt-get purge pinguybuilder --yes --assume-yes
+            #apt-get --yes --assume-yes autoremove
+
+            $FIRSTBOOTCOMMANDS
+
+            #Place your custom commands above this line
+            ES=\$?
+            [ "\$VERBOSE" != no ] && log_end_msg \$ES
+            return \$ES
+        fi
+
+}
+
+case "\$1" in
+    start)
+        do_start
+        ;;
+    restart|reload|force-reload)
+        echo "Error: argument '\$1' not supported" >&2
+        exit 3
+        ;;
+    stop)
+        ;;
+    *)
+        echo "Usage: \$0 start|stop" >&2
+        exit 3
+        ;;
+esac
+
+FOO
+
+fi
+
 case $1  in
 
     backup)
@@ -187,7 +207,7 @@ case $1  in
         echo "   sudo PinguyBuilder backup   (to make a livecd/dvd backup of your system)"
         echo " "
         echo "   sudo PinguyBuilder backup custom.iso"
-        echo "                             (to make a livecd/dvd backup and call the iso custom.iso)" 
+        echo "                             (to make a livecd/dvd backup and call the iso custom.iso)"
         echo " "
         echo "   sudo PinguyBuilder clean    (to clean up temporary files of PinguyBuilder)"
         echo " "
@@ -216,13 +236,7 @@ find /etc/apt -type f -iname \*~ -delete &> /dev/null
 tar pczvf /root/apt.tar.gz /etc/apt &> /dev/null
 sed -i "s/deb/#deb/g" /etc/apt/sources.list.d/*.list
 sed -i "s/deb/#deb/g" /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic main restricted" >> /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic universe" >> /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list
-echo "deb http://archive.canonical.com/ubuntu bionic partner" >> /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted" >> /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic-security universe" >> /etc/apt/sources.list
-echo "deb http://archive.ubuntu.com/ubuntu bionic-security multiverse" >> /etc/apt/sources.list
+echo "$SOURCESLIST" >> /etc/apt/sources.list
     apt-get update  &> /dev/null
 
 log_msg "Enabling PinguyBuilder-firstboot"
@@ -392,14 +406,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     sed -i "s/deb/#deb/g" $WORKDIR/dummysys/etc/apt/sources.list
     sed -i '/cdrom:/d' $WORKDIR/dummysys/etc/apt/sources.list &> /dev/null
     echo "deb cdrom:[$DISKINFONAME $DISTRIB_RELEASE - Release $ARCH]/ dists/" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic main restricted" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic universe" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic-backports main restricted universe multiverse" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.canonical.com/ubuntu bionic partner" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic-security main restricted" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic-security universe" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://archive.ubuntu.com/ubuntu bionic-security multiverse" >> $WORKDIR/dummysys/etc/apt/sources.list
-    echo "deb http://packages.linuxmint.com/ tara main upstream import backport romeo" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "$SOURCESLIST" >> $WORKDIR/dummysys/etc/apt/sources.list
 
     #renaming grub config
     sed -i "s/GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR=\"$LIVECDLABEL\"/g" $WORKDIR/dummysys/etc/default/grub
@@ -547,6 +554,12 @@ log_msg "Renaming Distro to $LIVECDLABEL"
 
     #copy any preseed files
     cp /etc/PinguyBuilder/preseed/* $WORKDIR/ISOTMP/preseed/
+    if [ -n "$SUCCESSCOMMAND" ]; then
+    cat > $WORKDIR/ISOTMP/preseed/configured_success_command.seed <<EOF
+ubiquity  ubiquity/success_command string \
+$SUCCESSCOMMAND
+EOF
+    fi
 
     #BOOT Type is isolinux
     log_msg "Copying memtest86+ for the live system"
@@ -562,7 +575,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
 
     #Downloading packages for offline install
     log_msg "Downloading packages for CD"
-    
+
     # Check Architecture
     ARCH=`archdetect | awk -F "/" '{print $1}'`
 
@@ -577,22 +590,22 @@ log_msg "Renaming Distro to $LIVECDLABEL"
      cd $WORKDIR/ISOTMP/
     dpkg-scanpackages pool /dev/null | gzip -9c > dists/Packages.gz
 
-    # check and see if they have a custom isolinux already setup. eg. they copied over 
+    # check and see if they have a custom isolinux already setup. eg. they copied over
     # the isolinux folder from their original livecd or made a custom one for their distro
 
     if [ ! -f /etc/PinguyBuilder/customisolinux/isolinux.cfg ]; then
         log_msg "Creating isolinux setup for the live system"
         find /usr -name 'isolinux.bin' -exec cp {} $WORKDIR/ISOTMP/isolinux/ \;
         #find fix for vesamenu.32 provided by Krasimir S. Stefanov <lokiisyourmaster@gmail.com>
-        VESAMENU=`find /usr -print0 | grep -FzZ "bios/vesamenu.c32"`
-        cp $VESAMENU $WORKDIR/ISOTMP/isolinux/ 
-        LDLINUX=`find /usr -print0 | grep -FzZ "bios/ldlinux.c32"`
+        VESAMENU=`find /usr -print0 | grep -FzZ "bios/vesamenu.c32" | tr '\0' '\n'`
+        cp $VESAMENU $WORKDIR/ISOTMP/isolinux/
+        LDLINUX=`find /usr -print0 | grep -FzZ "bios/ldlinux.c32" | tr '\0' '\n'`
         cp $LDLINUX $WORKDIR/ISOTMP/isolinux/
-        LIBUTIL=`find /usr -print0 | grep -FzZ "bios/libutil.c32"`
+        LIBUTIL=`find /usr -print0 | grep -FzZ "bios/libutil.c32" | tr '\0' '\n'`
         cp $LIBUTIL $WORKDIR/ISOTMP/isolinux/
-        LIBCOM=`find /usr -print0 | grep -FzZ "bios/libcom32.c32"`
+        LIBCOM=`find /usr -print0 | grep -FzZ "bios/libcom32.c32" | tr '\0' '\n'`
         cp $LIBCOM $WORKDIR/ISOTMP/isolinux/
-        MENU=`find /usr -print0 | grep -FzZ "bios/menu.c32"`
+        MENU=`find /usr -print0 | grep -FzZ "bios/menu.c32" | tr '\0' '\n'`
         cp $MENU $WORKDIR/ISOTMP/isolinux/
         # setup isolinux for the livecd
         VERSION=`lsb_release -r | awk '{print $2}' | awk -F "." '{print $1}'`
@@ -839,7 +852,7 @@ FOO
 
     sleep 1
 
-    #checking the size of the compressed filesystem to ensure it meets the iso9660 spec for a single file" 
+    #checking the size of the compressed filesystem to ensure it meets the iso9660 spec for a single file"
     SQUASHFSSIZE=`ls -s $WORKDIR/ISOTMP/casper/filesystem.squashfs | awk -F " " '{print $1}'`
     if [ "$SQUASHFSSIZE" -gt "3999999" ]; then
         log_msg "The compressed filesystem is larger than genisoimage allows for a single file. You must try to reduce the amount of data you are backing up and try again."
@@ -913,7 +926,7 @@ iso (){
         log_msg "The iso was not created. There was a problem. Exiting"
         exit 1
     fi
-    
+
     # Make the iso hybrid so it can be simply dd copied to a usb flash drive.
     log_msg "Making $CUSTOMISO a hybrid iso"
     isohybrid --uefi $WORKDIR/$CUSTOMISO
