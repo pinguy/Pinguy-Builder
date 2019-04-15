@@ -554,10 +554,12 @@ log_msg "Renaming Distro to $LIVECDLABEL"
 
     #copy any preseed files
     cp /etc/PinguyBuilder/preseed/* $WORKDIR/ISOTMP/preseed/
+    if [ -n "$SUCCESSCOMMAND" ]; then
     cat > $WORKDIR/ISOTMP/preseed/configured_success_command.seed <<EOF
 ubiquity  ubiquity/success_command string \
 $SUCCESSCOMMAND
 EOF
+    fi
 
     #BOOT Type is isolinux
     log_msg "Copying memtest86+ for the live system"
