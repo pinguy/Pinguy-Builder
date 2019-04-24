@@ -8,9 +8,9 @@ chmod 775 src/DEBIAN/prerm
 chmod 775 src/DEBIAN/postrm
 
 rm src/DEBIAN/md5sums
-find src -path "src/DEBIAN" -prune -o -type f -print0 | xargs -0 md5 -r | sed 's/ src/ /g' >> src/DEBIAN/md5sums
+find src -path "src/DEBIAN" -prune -o -type f -print0 | xargs -0 md5sum | sed 's/ src/ /g' >> src/DEBIAN/md5sums
 
-dpkg-deb -b src pinguybuilder_${VERSION}_all.deb
+fakeroot dpkg -b src pinguybuilder_${VERSION}_all.deb
 
 if [[ $1=="tag" && -z $(git tag -l "$VERSION") ]]; then
     echo tagging version ${VERSION}
