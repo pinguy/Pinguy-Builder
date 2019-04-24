@@ -1,0 +1,11 @@
+Package: pinguybuilder
+Version: 5.2-1
+Architecture: all
+Maintainer: pinguy <antoni.norman@gmail.com>
+Installed-Size: 11788
+Depends: archdetect-deb, memtest86+, coreutils, dialog, mkisofs | genisoimage, findutils, bash, passwd, sed, squashfs-tools, casper, rsync, mount, eject, libdebian-installer4, os-prober, user-setup, discover1 | discover, laptop-detect, syslinux, syslinux-common, util-linux, aufs-tools | unionfs-fuse, dpkg-dev, policykit-1, python (>= 2.7), python (<< 2.8), python-glade2, python-vte, gir1.2-vte-2.91, python-gi, python-gi-cairo, gir1.2-gtk-3.0, plymouth-x11
+Section: utils
+Priority: optional
+Homepage: <insert the upstream URL, if relevant>
+Description: This script creates a livecd of the installed system and works with *buntu systems.
+ You can either make a distributable livecd or a backup of your system.

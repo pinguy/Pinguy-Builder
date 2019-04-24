@@ -1,0 +1,27 @@
+#!/bin/sh
+# preinst script for pinguybuilder
+#
+# see: dh_installdeb(1)
+
+set -e
+
+if [ -d /PinguyBuilder ]
+then
+mv /PinguyBuilder /home
+fi
+
+if [ -f /etc/PinguyBuilder.conf ]
+then
+mv /etc/PinguyBuilder.conf /etc/PinguyBuilder.conf.old
+fi
+
+if [ -f /etc/PinguyBuilder/isolinux/splash.png ]
+then
+mv /etc/PinguyBuilder/isolinux/splash.png /etc/PinguyBuilder/isolinux/splash.png.saved
+fi
+
+
+
+exit 0
+
+
