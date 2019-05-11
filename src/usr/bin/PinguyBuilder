@@ -1,4 +1,6 @@
 #!/bin/bash
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -e
 
 . /etc/PinguyBuilder/PinguyBuilder.version
 
@@ -43,8 +45,16 @@ touch $WORKDIR/PinguyBuilder.log
 
 #added log_msg to reduce size. code provided by Ivailo (a.k.a. SmiL3y)
 log_msg() {
-    echo "$1"
-    echo "$1" >>$WORKDIR/PinguyBuilder.log
+    if [[ ! -z "$1" ]]; then
+        echo "$1"
+        IN="$1"
+    else
+        while read INPUT; do
+            IN="$IN\n$INPUT"
+        done
+    fi
+
+    echo -e "[$(date --rfc-3339=seconds)], ${BASH_LINENO}: $IN" >>$WORKDIR/PinguyBuilder.log
 }
 
 if [ "$LIVECDLABEL" = "" ]; then
@@ -231,13 +241,13 @@ esac
 
 cdfs (){
 #Cleaning Apt and backing up
-find /etc/apt -type f -iname \*.save -delete &> /dev/null
-find /etc/apt -type f -iname \*~ -delete &> /dev/null
-tar pczvf /root/apt.tar.gz /etc/apt &> /dev/null
+find /etc/apt -type f -iname \*.save -delete 2>&1 | log_msg
+find /etc/apt -type f -iname \*~ -delete 2>&1 | log_msg
+tar pczvf /root/apt.tar.gz /etc/apt 2>&1 | log_msg
 sed -i "s/deb/#deb/g" /etc/apt/sources.list.d/*.list
 sed -i "s/deb/#deb/g" /etc/apt/sources.list
 echo "$SOURCESLIST" >> /etc/apt/sources.list
-    apt-get update  &> /dev/null
+    apt-get update  2>&1 | log_msg
 
 log_msg "Enabling PinguyBuilder-firstboot"
 chmod 755 /etc/init.d/PinguyBuilder-firstboot
@@ -254,42 +264,46 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
     #sed -i "s/HOST=.*/HOST=$LIVEUSER/g" /usr/share/initramfs-tools/scripts/casper
     #removing popularity-contest as it causes a problem when installing with ubiquity
     log_msg "Making sure popularity contest is not installed"
-    apt-get -y -q remove popularity-contest &> /dev/null
+    apt-get -y -q remove popularity-contest 2>&1 | log_msg
 
     #removing syslinux-themes as it causes problems
     log_msg "Making sure syslinux-themes is not installed"
-    apt-get -y -q purge syslinux-themes* &> /dev/null
+    apt-get -y -q purge syslinux-themes* 2>&1 | log_msg
 
     #removing gnome-initial-setup as it causes problems
     log_msg "Making sure gnome-initial-setup is not installed"
-    apt-get -y -q purge gnome-initial-setup &> /dev/null
+    apt-get -y -q purge gnome-initial-setup 2>&1 | log_msg
 
      #Installing isolinux if needed
     log_msg "Making sure isolinux is installed"
-    apt-get -y -q install isolinux syslinux-utils &> /dev/null
+    apt-get -y -q install isolinux syslinux-utils 2>&1 | log_msg
 
     # check whether system is gnome or kde based to load the correct ubiquity frontend
 
     if [ "`ps axf | grep startkde | grep -v grep`" != "" -o "`ps axf | grep kwin | grep -v grep`" != "" ]; then
         log_msg "Installing the Ubiquity KDE frontend"
-        apt-get -y -q purge ubiquity-casper &> /dev/null
-        apt-get -y -q purge ubiquity &> /dev/null
-        apt-get -y -q remove ubiquity-ubuntu-artwork &> /dev/null
-        apt-get -y -q remove ubiquity-frontend-kde &> /dev/null
-        apt-get -y -q install ubiquity-frontend-kde &> /dev/null
-        apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
-        chmod +x /usr/share/applications/kde4/ubiquity-kdeui.desktop &> /dev/null
-        sed -i "s/ubiquity kde_ui/pkexec ubiquity kde_ui/" /usr/share/applications/kde4/ubiquity-kdeui.desktop
+        apt-get -y -q purge ubiquity-casper 2>&1 | log_msg
+        apt-get -y -q purge ubiquity 2>&1 | log_msg
+        apt-get -y -q remove ubiquity-ubuntu-artwork 2>&1 | log_msg
+        apt-get -y -q remove ubiquity-frontend-kde 2>&1 | log_msg
+        apt-get -y -q install ubiquity-frontend-kde 2>&1 | log_msg
+        apt-get -y -q remove ubiquity-frontend-gtk 2>&1 | log_msg
+        if [[ -f "/usr/share/applications/kde4/ubiquity-kdeui.desktop" ]]; then
+            chmod +x /usr/share/applications/kde4/ubiquity-kdeui.desktop 2>&1 | log_msg
+            sed -i "s/ubiquity kde_ui/pkexec ubiquity kde_ui/" /usr/share/applications/kde4/ubiquity-kdeui.desktop
+        fi
     else
         log_msg "Installing the Ubiquity GTK frontend"
-        apt-get -y -q purge ubiquity-casper &> /dev/null
-        apt-get -y -q purge ubiquity &> /dev/null
-        apt-get -y -q remove ubiquity-ubuntu-artwork &> /dev/null
-        apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
-        apt-get -y -q install ubiquity-frontend-gtk &> /dev/null
-        apt-get -y -q remove ubiquity-frontend-kde &> /dev/null
-        chmod +x /usr/share/applications/ubiquity.desktop &> /dev/null
-        sed -i "s/sh -c 'ubiquity gtk_ui'/pkexec ubiquity gtk_ui/" /usr/share/applications/ubiquity.desktop
+        apt-get -y -q purge ubiquity-casper 2>&1 | log_msg
+        apt-get -y -q purge ubiquity 2>&1 | log_msg
+        apt-get -y -q remove ubiquity-ubuntu-artwork 2>&1 | log_msg
+        apt-get -y -q remove ubiquity-frontend-gtk 2>&1 | log_msg
+        apt-get -y -q install ubiquity-frontend-gtk 2>&1 | log_msg
+        apt-get -y -q remove ubiquity-frontend-kde 2>&1 | log_msg
+        if [[ -f "/usr/share/applications/ubiquity.desktop" ]]; then
+            chmod +x /usr/share/applications/ubiquity.desktop 2>&1 | log_msg
+            sed -i "s/sh -c 'ubiquity gtk_ui'/pkexec ubiquity gtk_ui/" /usr/share/applications/ubiquity.desktop
+        fi
     fi
 
     # Replacing Ubiquity icons
@@ -300,19 +314,19 @@ log_msg "$WORKDIR is on a $DIRTYPE filesystem"
     chmod 777 /usr/share/icons/ubuntu-logo-icon.png
     gtk-update-icon-cache
     update-icon-caches /usr/share/icons/*
-    rm -r /etc/apt &> /dev/null
-    tar -xf /root/apt.tar.gz -C / &> /dev/null
+    rm -r /etc/apt 2>&1 | log_msg
+    tar -xf /root/apt.tar.gz -C / 2>&1 | log_msg
 
 log_msg "Cleaning System before building"
     apt-get clean
     rm -rf /opt/teamviewer/config/global.conf
-    #apt-get -y -q autoremove &> /dev/null
-    #dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs apt-get -y purge &> /dev/null
-    apt-get -y -q purge firefox-locale-* hunspell-* language-pack-gnome-* libreoffice-help-* libreoffice-l10n-* mythes-* &> /dev/null
+    #apt-get -y -q autoremove 2>&1 | log_msg
+    #dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs apt-get -y purge 2>&1 | log_msg
+    apt-get -y -q purge firefox-locale-* hunspell-* language-pack-gnome-* libreoffice-help-* libreoffice-l10n-* mythes-* 2>&1 | log_msg
     #Removing swapfile
-    swapoff -v /swapfile &> /dev/null
-    rm /swapfile &> /dev/null
-    sed -i '/swapfile/d' /etc/fstab &> /dev/null
+    swapoff -v /swapfile 2>&1 | log_msg
+    rm /swapfile 2>&1 | log_msg
+    sed -i '/swapfile/d' /etc/fstab 2>&1 | log_msg
 
 log_msg "Renaming Distro to $LIVECDLABEL"
     sed -i 's/PRETTY_NAME=.*/PRETTY_NAME="LIVECDLABEL"/g' /usr/lib/os-release
@@ -404,14 +418,14 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     log_msg "Adding CD-ROM to source list"
     . /etc/lsb-release
     sed -i "s/deb/#deb/g" $WORKDIR/dummysys/etc/apt/sources.list
-    sed -i '/cdrom:/d' $WORKDIR/dummysys/etc/apt/sources.list &> /dev/null
+    sed -i '/cdrom:/d' $WORKDIR/dummysys/etc/apt/sources.list 2>&1 | log_msg
     echo "deb cdrom:[$DISKINFONAME $DISTRIB_RELEASE - Release $ARCH]/ dists/" >> $WORKDIR/dummysys/etc/apt/sources.list
     echo "$SOURCESLIST" >> $WORKDIR/dummysys/etc/apt/sources.list
 
     #renaming grub config
     sed -i "s/GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR=\"$LIVECDLABEL\"/g" $WORKDIR/dummysys/etc/default/grub
     chmod 777 $WORKDIR/dummysys/etc/lsb-release
-    sed -i '/DISTRIB_DESCRIPTION/d' $WORKDIR/dummysys/etc/lsb-release &> /dev/null
+    sed -i '/DISTRIB_DESCRIPTION/d' $WORKDIR/dummysys/etc/lsb-release 2>&1 | log_msg
     echo "DISTRIB_DESCRIPTION=\"$LIVECDLABEL\"" >> /home/PinguyBuilder/PinguyBuilder/dummysys/etc/lsb-release
 
     #Creating startup script so the installer is marked as 'Trusted' on the desktop
@@ -430,15 +444,15 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     chmod +x $WORKDIR/dummysys/etc/network/if-up.d/update
 
     log_msg "Cleaning up files not needed for the live in $WORKDIR/dummysys"
-    rm -rf $WORKDIR/dummysys/etc/apt/sources.list.d/*.save &> /dev/null
-    rm -rf $WORKDIR/dummysys/etc/apt/apt.conf.d/* &> /dev/null
-    rm -rf $WORKDIR/dummysys/etc/apt/preferences.d/* &> /dev/null
-    rm -rf $WORKDIR/dummysys/var/lib/apt/lists/* -vf &> /dev/null
-    rm -rf $WORKDIR/dummysys/var/lib/apt/lists/lock &> /dev/null
-    find $WORKDIR/dummysys/var/cache/apt -type f -exec rm -rf '{}' \; &> /dev/null
-    find $WORKDIR/dummysys/var/cache/apt-xapian-index -type f -exec rm -rf '{}' \; &> /dev/null
-    find $WORKDIR/dummysys/var/lib/apt -type f -exec rm -rf '{}' \; &> /dev/null
-    rm -rf $WORKDIR/dummysys/var/lib/ureadahead/pack &> /dev/null
+    rm -rf $WORKDIR/dummysys/etc/apt/sources.list.d/*.save 2>&1 | log_msg
+    rm -rf $WORKDIR/dummysys/etc/apt/apt.conf.d/* 2>&1 | log_msg
+    rm -rf $WORKDIR/dummysys/etc/apt/preferences.d/* 2>&1 | log_msg
+    rm -rf $WORKDIR/dummysys/var/lib/apt/lists/* -vf 2>&1 | log_msg
+    rm -rf $WORKDIR/dummysys/var/lib/apt/lists/lock 2>&1 | log_msg
+    find $WORKDIR/dummysys/var/cache/apt -type f -exec rm -rf '{}' \; 2>&1 | log_msg
+    find $WORKDIR/dummysys/var/cache/apt-xapian-index -type f -exec rm -rf '{}' \; 2>&1 | log_msg
+    find $WORKDIR/dummysys/var/lib/apt -type f -exec rm -rf '{}' \; 2>&1 | log_msg
+    rm -rf $WORKDIR/dummysys/var/lib/ureadahead/pack 2>&1 | log_msg
     rm -f $WORKDIR/dummysys/etc/X11/xorg.conf*
     rm -f $WORKDIR/dummysys/etc/{hosts,hostname,mtab*,fstab}
     if [ ! -L $WORKDIR/dummysys/etc/resolv.conf ]; then
@@ -449,7 +463,24 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     rm -f $WORKDIR/dummysys/etc/ssh/*key*
     rm -f $WORKDIR/dummysys/var/lib/dbus/machine-id
     rsync -a /dev/urandom $WORKDIR/dummysys/dev/
-    find $WORKDIR/dummysys/var/log/ $WORKDIR/dummysys/var/lock/ $WORKDIR/dummysys/var/backups/ $WORKDIR/dummysys/var/tmp/ $WORKDIR/dummysys/var/crash/ $WORKDIR/dummysys/var/lib/ubiquity/ -type f -exec rm -f {} \;
+    if [[ -d "$WORKDIR/dummysys/var/log/" ]]; then
+        find $WORKDIR/dummysys/var/log/ -type f -exec rm -f {} \; 2>&1 | log_msg
+    fi
+    if [[ -d "$WORKDIR/dummysys/var/lock/" ]]; then
+        find $WORKDIR/dummysys/var/lock/ -type f -exec rm -f {} \; 2>&1 | log_msg
+    fi
+    if [[ -d "$WORKDIR/dummysys/var/backups/" ]]; then
+        find $WORKDIR/dummysys/var/backups/ -type f -exec rm -f {} \; 2>&1 | log_msg
+    fi
+    if [[ -d "$WORKDIR/dummysys/var/tmp/" ]]; then
+        find $WORKDIR/dummysys/var/tmp/ -type f -exec rm -f {} \; 2>&1 | log_msg
+    fi
+    if [[ -d "$WORKDIR/dummysys/var/crash/" ]]; then
+        find $WORKDIR/dummysys/var/crash/ -type f -exec rm -f {} \; 2>&1 | log_msg
+    fi
+    if [[ -d "$WORKDIR/dummysys/var/lib/ubiquity/" ]]; then
+        find $WORKDIR/dummysys/var/lib/ubiquity/ -type f -exec rm -f {} \; 2>&1 | log_msg
+    fi
 
     if [ "$1" = "dist" ]; then
 
@@ -459,7 +490,9 @@ log_msg "Renaming Distro to $LIVECDLABEL"
         rm -f $WORKDIR/dummysys/etc/printcap
         rm -f $WORKDIR/dummysys/etc/cups/printers.conf
         touch $WORKDIR/dummysys/etc/printcap
-        touch $WORKDIR/dummysys/etc/cups/printers.conf
+        if [[ -d "$WORKDIR/dummysys/etc/cups/" ]]; then
+            touch $WORKDIR/dummysys/etc/cups/printers.conf
+        fi
         rm -rf $WORKDIR/dummysys/var/cache/gdm3/*
         rm -rf $WORKDIR/dummysys/var/lib/sudo/*
         rm -rf $WORKDIR/dummysys/var/lib/AccountsService/users/*
@@ -512,7 +545,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
         grep '^[^:]*:[^:]*:[1-2][0-9][0-9][0-9][0-9]:' /etc/passwd | awk -F ":" '{print $1}'> $WORKDIR/tmpusers3
 
         cat $WORKDIR/tmpusers1 $WORKDIR/tmpusers2 $WORKDIR/tmpusers3 > $WORKDIR/tmpusers
-        rm -f $WORKDIR/tmpusers[0-9] &> /dev/null
+        rm -f $WORKDIR/tmpusers[0-9] 2>&1 | log_msg
 
         #cp /etc/shadow $WORKDIR/dummysys/etc/shadow
         #cp /etc/gshadow $WORKDIR/dummysys/etc/gshadow
@@ -536,7 +569,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
             #echo $LINE | xargs -i sed -e 's/:{}$/:/g' $WORKDIR/dummysys/etc/gshadow.new3 > $WORKDIR/dummysys/etc/gshadow.new4
             #echo $LINE | xargs -i sed -e 's/:{},/:/g' $WORKDIR/dummysys/etc/gshadow.new4 > $WORKDIR/dummysys/etc/gshadow
 
-            rm -f $WORKDIR/dummysys/etc/group.new* &> /dev/null
+            rm -f $WORKDIR/dummysys/etc/group.new* 2>&1 | log_msg
 
         done
 
@@ -582,9 +615,9 @@ EOF
     mkdir -p $WORKDIR/ISOTMP/pool
       cd $WORKDIR/ISOTMP/pool
     if [ "$ARCH" = "amd64" ] ; then
-    apt-get download b43-fwcutter bcmwl-kernel-source efibootmgr grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-amd64-signed grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub-pc grub2-common grub-gfxpayload-lists mokutil os-prober secureboot-db shim shim-signed &> /dev/null
+    apt-get download b43-fwcutter bcmwl-kernel-source efibootmgr grub-common grub-efi grub-efi-amd64 grub-efi-amd64-bin grub-efi-amd64-signed grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub-pc grub2-common grub-gfxpayload-lists mokutil os-prober secureboot-db shim shim-signed 2>&1 | log_msg
     else
-    apt-get download b43-fwcutter bcmwl-kernel-source efibootmgr grub-common grub-efi grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub-pc grub2-common grub-gfxpayload-lists mokutil os-prober secureboot-db &> /dev/null
+    apt-get download b43-fwcutter bcmwl-kernel-source efibootmgr grub-common grub-efi grub-efi-ia32 grub-efi-ia32-bin grub-pc-bin grub-pc grub2-common grub-gfxpayload-lists mokutil os-prober secureboot-db 2>&1 | log_msg
     fi
      mkdir -p $WORKDIR/ISOTMP/dists
      cd $WORKDIR/ISOTMP/
@@ -614,7 +647,7 @@ EOF
         cp /etc/PinguyBuilder/isolinux/splash.png $WORKDIR/ISOTMP/isolinux/splash.png
     else
         log_msg "Copying your custom isolinux setup to the live system"
-        cp /etc/PinguyBuilder/customisolinux/* $WORKDIR/ISOTMP/isolinux/ &> /dev/null
+        cp /etc/PinguyBuilder/customisolinux/* $WORKDIR/ISOTMP/isolinux/ 2>&1 | log_msg
 
     fi
 
@@ -685,9 +718,9 @@ FOO
             # copy the install icon to the sudo users desktop
             log_msg "Copying the install icon to the desktop of $LIVEUSER"
             UBIQUITYDESKTOP=`find /usr/share/applications -name ubiquity*.desktop `
-            install -d -o $LIVEUSER -g $LIVEUSER /$LIVEHOME/Desktop &> /dev/null
-            install -D -o $LIVEUSER -g $LIVEUSER $UBIQUITYDESKTOP /$LIVEHOME/Desktop/ &> /dev/null
-            sed -i "s/RELEASE/$LIVECDLABEL/" "/$LIVEHOME/Desktop/`basename $UBIQUITYDESKTOP`" &> /dev/null
+            install -d -o $LIVEUSER -g $LIVEUSER /$LIVEHOME/Desktop 2>&1 | log_msg
+            install -D -o $LIVEUSER -g $LIVEUSER $UBIQUITYDESKTOP /$LIVEHOME/Desktop/ 2>&1 | log_msg
+            sed -i "s/RELEASE/$LIVECDLABEL/" "/$LIVEHOME/Desktop/`basename $UBIQUITYDESKTOP`" 2>&1 | log_msg
             chmod +x "/$LIVEHOME/Desktop/`basename $UBIQUITYDESKTOP`"
             sudo -i -u $LIVEUSER dbus-run-session -- gio set "/$LIVEHOME/Desktop/`basename $UBIQUITYDESKTOP`" metadata::trusted yes
         fi
@@ -758,7 +791,7 @@ FOO
     # Step 6 - Make filesystem.squashfs
 
     if [ -f $WORKDIR/ISOTMP/casper/filesystem.squashfs ]; then
-        rm -f $WORKDIR/ISOTMP/casper/filesystem.squashfs &> /dev/null
+        rm -f $WORKDIR/ISOTMP/casper/filesystem.squashfs 2>&1 | log_msg
     fi
 
     log_msg "Creating filesystem.squashfs   ... this will take a while so be patient"
@@ -838,17 +871,17 @@ FOO
 
     if [ "$1" = "backup" ]; then
         log_msg "Cleaning up the install icon from the user desktops"
-        rm -rf /home/*/*/ubiquity*.desktop &> /dev/null
+        rm -rf /home/*/*/ubiquity*.desktop 2>&1 | log_msg
     fi
 
     #remove frontend from the system so the Install menu item does not appear.
     log_msg "Removing the ubiquity frontend as it has been included and is not needed on the normal system"
-    apt-get -y -q remove ubiquity-frontend-kde &> /dev/null
-    apt-get -y -q remove ubiquity-frontend-gtk &> /dev/null
-    apt-get -y -q remove ubiquity-ubuntu-artwork &> /dev/null
-    #apt-get --yes --assume-yes autoremove &> /dev/null
+    apt-get -y -q remove ubiquity-frontend-kde 2>&1 | log_msg
+    apt-get -y -q remove ubiquity-frontend-gtk 2>&1 | log_msg
+    apt-get -y -q remove ubiquity-ubuntu-artwork 2>&1 | log_msg
+    #apt-get --yes --assume-yes autoremove 2>&1 | log_msg
     rm -rf /root/apt.tar.gz
-    apt-get install -y $(check-language-support) &> /dev/null
+    apt-get install -y $(check-language-support) 2>&1 | log_msg
 
     sleep 1
 
@@ -915,7 +948,7 @@ iso (){
     # remove files that change and cause problems with checking the disk
     sed -e '/isolinux/d' md5sum.txt > md5sum.txt.new
     sed -e '/md5sum/d' md5sum.txt.new > md5sum.txt
-    rm -f md5sum.txt.new &> /dev/null
+    rm -f md5sum.txt.new 2>&1 | log_msg
 
     sleep 1
 
