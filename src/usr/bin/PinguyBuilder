@@ -118,7 +118,10 @@ if [ "$FIRSTBOOTCOMMANDS" = "" ]; then
 fi
 
 #create PinguyBuilder-firstboot script if it doesn't exist and populate with at least removal of the ubiquity*.desktop file from users Desktop and fix for recovery mode
+fbtest=''
+if [[ -f "/etc/init.d/PinguyBuilder-firstboot" ]]; then
 fbtest=`grep "REM302" /etc/init.d/PinguyBuilder-firstboot`
+fi
 
 if [ "$fbtest" = "" ]; then
     cat > /etc/init.d/PinguyBuilder-firstboot <<FOO
