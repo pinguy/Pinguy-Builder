@@ -96,6 +96,35 @@ class Appgui:
         msg_info(_("It is necessary to close all other windows and unmount any network shares while running "
                    "PinguyBuilder Backup. Please do so now and then click OK when you are ready to continue."),
                  self.window_main)
+
+        # Setup Plymouth selector window layout
+        _nameColumn = Gtk.TreeViewColumn(_('Name'))
+        _plymouthPathColumn = Gtk.TreeViewColumn(_('Directory'))
+
+        _nameCell = Gtk.CellRendererText()
+        _plymouthCell = Gtk.CellRendererText()
+        _nameColumn.pack_start(_nameCell, True)
+        _plymouthPathColumn.pack_start(_plymouthCell, True)
+        _nameColumn.set_attributes(_nameCell, text=0)
+        _plymouthPathColumn.set_attributes(_plymouthCell, text=1)
+
+        self.builder.get_object("treeview_themes").append_column(_nameColumn)
+        self.builder.get_object("treeview_themes").append_column(_plymouthPathColumn)
+
+        #Setup Skel selector window layout
+        _userColumn = Gtk.TreeViewColumn(_('User'))
+        _homePathColumn = Gtk.TreeViewColumn(_('Home directory'))
+
+        _userCell = Gtk.CellRendererText()
+        _homeCell = Gtk.CellRendererText()
+
+        _userColumn.pack_start(_userCell, True)
+        _homePathColumn.pack_start(_homeCell, True)
+        _userColumn.set_attributes(_userCell, text=0)
+        _homePathColumn.set_attributes(_homeCell, text=1)
+
+        self.builder.get_object("treeview_user_skeleton").append_column(_userColumn)
+        self.builder.get_object("treeview_user_skeleton").append_column(_homePathColumn)
         
     def run_command(self, cmd, done_callback):
         argv = shlex.split(cmd)
@@ -340,19 +369,6 @@ https://www.dbad-license.org/.''')
 
         _liststore = Gtk.ListStore(str, str)
         self.builder.get_object("treeview_user_skeleton").set_model(_liststore)
-        _tvcolumn1 = Gtk.TreeViewColumn(_('User'))
-        _tvcolumn2 = Gtk.TreeViewColumn(_('Home directory'))
-        
-        _cell1 = Gtk.CellRendererText()
-        _cell2 = Gtk.CellRendererText()
-
-        _tvcolumn1.pack_start(_cell1, True)
-        _tvcolumn2.pack_start(_cell2, True)
-        _tvcolumn1.set_attributes(_cell1, text=0)
-        _tvcolumn2.set_attributes(_cell2, text=1)
-
-        self.builder.get_object("treeview_user_skeleton").append_column(_tvcolumn1)
-        self.builder.get_object("treeview_user_skeleton").append_column(_tvcolumn2)
 
         passwd = open('/etc/passwd', 'r').read().strip().split('\n')
         for row in passwd:
@@ -367,7 +383,7 @@ https://www.dbad-license.org/.''')
             os.makedirs('/etc/skel/')
 
     def on_button_window_user_skeleton_cancel_clicked(self, widget):
-        self.builder.get_object("window_user_skeleton").destroy()
+        self.builder.get_object("window_user_skeleton").hide()
         self.builder.get_object("window_main").show()
 
     def on_button_window_user_skeleton_ok_clicked(self, widget):
@@ -384,7 +400,7 @@ https://www.dbad-license.org/.''')
         process.wait()
         self.builder.get_object("progressbar_user_skeleton").hide()
         self.builder.get_object("buttonbox_user_skeleton").set_sensitive(True)
-        self.builder.get_object("window_user_skeleton").destroy()
+        self.builder.get_object("window_user_skeleton").hide()
         self.builder.get_object("window_main").show()
 
     # END USER SKELETON HANDLERS
@@ -395,18 +411,6 @@ https://www.dbad-license.org/.''')
 
         self._liststore = Gtk.ListStore(str, str)
         self.builder.get_object("treeview_themes").set_model(self._liststore)
-        _tvcolumn1 = Gtk.TreeViewColumn(_('Name'))
-        _tvcolumn2 = Gtk.TreeViewColumn(_('Directory'))
-        
-        _cell1 = Gtk.CellRendererText()
-        _cell2 = Gtk.CellRendererText()
-        _tvcolumn1.pack_start(_cell1, True)
-        _tvcolumn2.pack_start(_cell2, True)
-        _tvcolumn1.set_attributes(_cell1, text=0)
-        _tvcolumn2.set_attributes(_cell2, text=1)
-
-        self.builder.get_object("treeview_themes").append_column(_tvcolumn1)
-        self.builder.get_object("treeview_themes").append_column(_tvcolumn2)
         self.list_themes()
         self.builder.get_object("window_plymouth").show()
 
@@ -596,11 +600,11 @@ https://www.dbad-license.org/.''')
             theme = model.get(treeiter, 1)[0]
             os.system('update-alternatives --set default.plymouth "%s"' % theme)
             self.update_initramfs()
-        self.builder.get_object("window_plymouth").destroy()
+        self.builder.get_object("window_plymouth").hide()
         self.builder.get_object("window_main").show()
 
     def on_button_window_plymouth_cancel_clicked(self, widget, data = None):
-        self.builder.get_object("window_plymouth").destroy()
+        self.builder.get_object("window_plymouth").hide()
         self.builder.get_object("window_main").show()
     # END PLAYMOUTH HANDLERS
 
@@ -647,10 +651,10 @@ https://www.dbad-license.org/.''')
             self.getvalue('SOURCESLIST', config_txt, ''))
 
         self.builder.get_object("textview_success_command").get_buffer().set_text(
-            self.getvalue('SUCCESSCOMMAND', config_txt, ''))
+            unescape_bash_script(self.getvalue('SUCCESSCOMMAND', config_txt, '')))
 
         self.builder.get_object("textview_first_boot_commands").get_buffer().set_text(
-            self.getvalue('FIRSTBOOTCOMMANDS', config_txt, ''))
+            unescape_bash_script(self.getvalue('FIRSTBOOTCOMMANDS', config_txt, '')))
 
     def update_conf(self):
         if self.builder.get_object("checkbutton_show_backup_icon").get_active():
@@ -662,10 +666,10 @@ https://www.dbad-license.org/.''')
         SOURCESLIST = _buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True)
 
         _buffer = self.builder.get_object("textview_success_command").get_buffer()
-        SUCCESSCOMMAND = _buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True)
+        SUCCESSCOMMAND = escape_bash_script(_buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True))
 
         _buffer = self.builder.get_object("textview_first_boot_commands").get_buffer()
-        FIRSTBOOTCOMMANDS = _buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True)
+        FIRSTBOOTCOMMANDS = escape_bash_script(_buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True))
             
         conf_content = '''
 #PinguyBuilder Global Configuration File
@@ -817,6 +821,14 @@ def msg_input(title, message, label, default='', window=None, password=False):
         return text
     else:
         return None
+
+
+def escape_bash_script(script):
+    return script.replace('\\', '\\\\').replace('\"', '\\\"')
+
+
+def unescape_bash_script(script):
+    return script.replace('\\\"', '\"').replace('\\\\', '\\')
 
 
 class Namespace: pass

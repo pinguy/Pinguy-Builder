@@ -709,25 +709,6 @@
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
-                    <property name="top_attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label17">
-                    <property name="visible">True</property>
-                    <property name="sensitive">False</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="hexpand">True</property>
-                    <property name="label" translatable="yes">&lt;span color="red"&gt;Warning: You need to escape the " and \ characters (ex: \\ or \") .&lt;/span&gt;</property>
-                    <property name="use_markup">True</property>
-                    <property name="justify">fill</property>
-                    <property name="wrap">True</property>
-                    <property name="width_chars">80</property>
-                    <property name="max_width_chars">80</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
                     <property name="top_attach">0</property>
                   </packing>
                 </child>
@@ -741,7 +722,7 @@
               <object class="GtkLabel" id="label_success_command">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Success Command</property>
+                <property name="label" translatable="yes">Success Commands</property>
               </object>
               <packing>
                 <property name="menu_label">Success Command</property>
@@ -757,25 +738,6 @@
                   <object class="GtkTextView" id="textview_first_boot_commands">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label24">
-                    <property name="visible">True</property>
-                    <property name="sensitive">False</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="hexpand">True</property>
-                    <property name="label" translatable="yes">&lt;span color="red"&gt;Warning: You need to escape the " and \ characters (ex: \\ or \") .&lt;/span&gt;</property>
-                    <property name="use_markup">True</property>
-                    <property name="justify">fill</property>
-                    <property name="wrap">True</property>
-                    <property name="width_chars">80</property>
-                    <property name="max_width_chars">80</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
