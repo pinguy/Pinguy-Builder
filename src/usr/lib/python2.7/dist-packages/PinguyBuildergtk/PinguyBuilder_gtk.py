@@ -377,7 +377,7 @@ https://www.dbad-license.org/.''')
                 _liststore.append([data[0], data[5]])
         self.builder.get_object("window_user_skeleton").show()
 
-    def on_button_delete_skel_clicked(self,widget):
+    def on_button_delete_skel_clicked(self, widget):
         if msg_confirm(_("Are you sure you want to delete the contents of /etc/skel?"), self.window_main):
             shutil.rmtree('/etc/skel/')
             os.makedirs('/etc/skel/')
