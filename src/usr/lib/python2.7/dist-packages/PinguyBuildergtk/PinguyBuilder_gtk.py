@@ -68,6 +68,7 @@ class Appgui:
             "on_button_delete_skel_clicked": self.on_button_delete_skel_clicked,
             "on_button_plymouth_theme_clicked": self.on_button_plymouth_theme_clicked,
             "on_button_working_directory_clicked": self.on_button_working_directory_clicked,
+            "on_checkbutton_enable_unattended_install_toggled": self.on_checkbutton_enable_unattended_install_toggled,
             "on_button_about_clicked": self.on_button_about_clicked,
             "on_button_close_clicked": self.quit,
             "on_window_main_delete_event": self.quit,
@@ -125,7 +126,7 @@ class Appgui:
 
         self.builder.get_object("treeview_user_skeleton").append_column(_userColumn)
         self.builder.get_object("treeview_user_skeleton").append_column(_homePathColumn)
-        
+
     def run_command(self, cmd, done_callback):
         argv = shlex.split(cmd)
         pty = Vte.Pty.new_sync(Vte.PtyFlags.DEFAULT)
@@ -177,7 +178,7 @@ class Appgui:
             msg_error(_("The process was interrupted!"), self.window_main)
         self.builder.get_object("notebook_window_main").set_current_page(0)
         self.v.handler_disconnect(self.callback_id)
-        
+
     def on_button_distfs_clicked(self, widget):
         self.update_conf()
         if not msg_confirm(_("You have selected Dist CDFS Mode. Click OK to Start the Distributable LiveCD/DVD "
@@ -196,7 +197,7 @@ class Appgui:
             msg_error(_("The process was interrupted!"), self.window_main)
         self.builder.get_object("notebook_window_main").set_current_page(0)
         self.v.handler_disconnect(self.callback_id)
-    
+
     def on_button_distISO_clicked(self,widget):
         self.update_conf()
         WORKDIR = self.builder.get_object("entry_working_directory").get_text()
@@ -222,7 +223,7 @@ class Appgui:
             msg_error(_("The process was interrupted!"), self.window_main)
         self.builder.get_object("notebook_window_main").set_current_page(0)
         self.v.handler_disconnect(self.callback_id)
-        
+
     def on_button_clear_clicked(self,widget):
         self.update_conf()
         if not msg_confirm(_("This will remove all the files from the temporary directory. Click OK to proceed."),
@@ -239,7 +240,7 @@ class Appgui:
             msg_error(_("The process was interrupted!"), self.window_main)
         self.builder.get_object("notebook_window_main").set_current_page(0)
         self.v.handler_disconnect(self.callback_id)
-        
+
     def on_button_about_clicked(self, widget):
         # show about dialog
         about = Gtk.AboutDialog()
@@ -283,6 +284,11 @@ https://www.dbad-license.org/.''')
             self.builder.get_object("entry_working_directory").set_text(dialog.get_filename())
         dialog.destroy()
 
+    def on_checkbutton_enable_unattended_install_toggled(self, widget):
+        active = self.builder.get_object("checkbutton_enable_unattended_install").get_active()
+        self.builder.get_object("textview_preseed_conf").set_sensitive(active)
+        self.builder.get_object("textview_packages_pool").set_sensitive(active)
+
     def on_button_boot_picture_livecd_clicked(self, widget):
         dialog = Gtk.FileChooserDialog( title=_("Select 640x480 PNG image..."),
                                         action=Gtk.FileChooserAction.OPEN,
@@ -291,7 +297,7 @@ https://www.dbad-license.org/.''')
         dialog.set_transient_for(self.window_main)
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_current_folder(self.working_dir)
-        
+
         filter = Gtk.FileFilter()
         filter.set_name(_("PNG Images"))
         filter.add_mime_type("image/png")
@@ -305,7 +311,7 @@ https://www.dbad-license.org/.''')
         if response == Gtk.ResponseType.OK:
             now = datetime.datetime.now()
             filename = dialog.get_filename()
-            dialog.destroy()  
+            dialog.destroy()
             self.working_dir = os.path.dirname(filename)
             shutil.move("/etc/PinguyBuilder/isolinux/splash.png",
                         "/etc/PinguyBuilder/isolinux/splash.png." + now.strftime("%Y%m%d%H%M%S"))
@@ -313,7 +319,7 @@ https://www.dbad-license.org/.''')
             msg_info(_("%s has been copied to /etc/PinguyBuilder/isolinux/splash.png becoming the default background "
                        "for the LIVE menu.") % filename, self.window_main)
         else:
-            dialog.destroy()                  
+            dialog.destroy()
 
     def on_button_boot_picture_installed_clicked(self, widget):
         dialog = Gtk.FileChooserDialog(title=_("Select image..."),
@@ -334,17 +340,17 @@ https://www.dbad-license.org/.''')
             dialog.destroy()
 
             grub = open('/etc/PinguyBuilder/grub.ucf-dist').read()
-            
+
             m = re.search('(#?)GRUB_BACKGROUND=.*', grub)
             if m is not None:
                 grub.replace(m.group(0), 'GRUB_BACKGROUND="%s"' % grub_bg)
             else:
                 grub += '\nGRUB_BACKGROUND="%s"' % grub_bg
-            
+
             f = open('/etc/PinguyBuilder/grub.ucf-dist', 'w+')
             f.write(grub)
             f.close()
-            
+
             msg_info(_("%(filename)s has been copied to %(grub_bg)s and is the default background for grub. Click OK "
                        "to update grub with the new settings so you can see your picture on the next boot.") % ({
                      'filename': filename, 'grub_bg': grub_bg}), self.window_main)
@@ -354,7 +360,7 @@ https://www.dbad-license.org/.''')
             while process.poll() is None:
                 while Gtk.events_pending():
                     Gtk.main_iteration_do(False)
-                time.sleep(.1) 
+                time.sleep(.1)
                 self.builder.get_object("progressbar_boot_picture_installed").pulse()
             process.wait()
             self.builder.get_object("progressbar_boot_picture_installed").hide()
@@ -612,12 +618,12 @@ https://www.dbad-license.org/.''')
         self.update_conf()
         Gtk.main_quit()
         exit(0)
-        
+
     def load_settings(self):
         config_f = open(self.conffile)
         config_txt = config_f.read()
         config_f.close()
-        
+
         self.builder.get_object("entry_username").set_text(
             self.getvalue('LIVEUSER', config_txt, 'custom'))
 
@@ -629,21 +635,18 @@ https://www.dbad-license.org/.''')
 
         self.builder.get_object("entry_exclude").set_text(
             self.getvalue('EXCLUDES', config_txt, ''))
-    
+
         self.builder.get_object("entry_url_usb_creator").set_text(
             self.getvalue('LIVECDURL', config_txt, 'http://pinguyos.com'))
 
         self.builder.get_object("entry_squashfs_options").set_text(
             self.getvalue('SQUASHFSOPTS', config_txt, '-no-recovery -always-use-fragments -b 1M -no-duplicates'))
 
-        self.builder.get_object("checkbutton_show_backup_icon").set_active(
-            self.getvalue('BACKUPSHOWINSTALL', config_txt, '1') == '1')
-        
         workdir = self.getvalue('WORKDIR', config_txt, '/home/PinguyBuilder')
         if not os.path.exists(workdir):
             os.makedirs(workdir)
         self.builder.get_object("entry_working_directory").set_text(workdir)
-        
+
         self.builder.get_object("checkbutton_show_backup_icon").set_active(
             self.getvalue('BACKUPSHOWINSTALL', config_txt, '1').upper() == '1')
 
@@ -655,6 +658,16 @@ https://www.dbad-license.org/.''')
 
         self.builder.get_object("textview_first_boot_commands").get_buffer().set_text(
             unescape_bash_script(self.getvalue('FIRSTBOOTCOMMANDS', config_txt, '')))
+
+        self.builder.get_object("checkbutton_enable_unattended_install").set_active(
+            self.getvalue('UNATTENDEDINSTALL', config_txt, '1') == '1')
+
+        self.builder.get_object("textview_preseed_conf").get_buffer().set_text(
+            unescape_bash_script(self.getvalue('PRESEEDCONF', config_txt, '')))
+
+        self.builder.get_object("textview_packages_pool").get_buffer().set_text(
+            unescape_bash_script(self.getvalue('PACKAGESPOOL', config_txt, '')))
+
 
     def update_conf(self):
         if self.builder.get_object("checkbutton_show_backup_icon").get_active():
@@ -670,7 +683,18 @@ https://www.dbad-license.org/.''')
 
         _buffer = self.builder.get_object("textview_first_boot_commands").get_buffer()
         FIRSTBOOTCOMMANDS = escape_bash_script(_buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True))
-            
+
+        if self.builder.get_object("checkbutton_enable_unattended_install").get_active():
+            UNATTENDEDINSTALL = '1'
+        else:
+            UNATTENDEDINSTALL = '0'
+
+        _buffer = self.builder.get_object("textview_preseed_conf").get_buffer()
+        PRESEEDCONF = _buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True)
+
+        _buffer = self.builder.get_object("textview_packages_pool").get_buffer()
+        PACKAGESPOOL = _buffer.get_text(_buffer.get_start_iter(), _buffer.get_end_iter(), True)
+
         conf_content = '''
 #PinguyBuilder Global Configuration File
 
@@ -716,6 +740,15 @@ SUCCESSCOMMAND="%(SUCCESSCOMMAND)s"
 
 # Here you can add custom commands to run in PinguyBuilder-firstboot service
 FIRSTBOOTCOMMANDS="%(FIRSTBOOTCOMMANDS)s"
+
+# Here you can enable unattended install
+UNATTENDEDINSTALL="%(UNATTENDEDINSTALL)s"
+
+# Here you can add the preseed config
+PRESEEDCONF="%(PRESEEDCONF)s"
+
+# Here you can add extra pacakges to be included in CDRom pool for offline install
+PACKAGESPOOL="%(PACKAGESPOOL)s"
 ''' % ({
         "WORKDIR" : self.builder.get_object("entry_working_directory").get_text(),
         "EXCLUDES" : self.builder.get_object("entry_exclude").get_text(),
@@ -728,6 +761,9 @@ FIRSTBOOTCOMMANDS="%(FIRSTBOOTCOMMANDS)s"
         "SOURCESLIST": SOURCESLIST,
         "SUCCESSCOMMAND": SUCCESSCOMMAND,
         "FIRSTBOOTCOMMANDS": FIRSTBOOTCOMMANDS,
+        "UNATTENDEDINSTALL": UNATTENDEDINSTALL,
+        "PRESEEDCONF": PRESEEDCONF,
+        "PACKAGESPOOL": PACKAGESPOOL
         })
 
         conf = open(self.conffile, 'w+')
