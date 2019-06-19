@@ -2,7 +2,7 @@
 0c705126eee97f29f2b24b889ec52e4f  /usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/PKG-INFO
 1fe7cb24d0da0149279d5232820b2936  /usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/top_level.txt
 68b329da9893e34099c7d8ad5cb9c940  /usr/lib/python2.7/dist-packages/PinguyBuilder_gtk-3.0.4.egg-info/dependency_links.txt
-4c0363b91a52fdded8ccce9d16a6ee31  /usr/lib/python2.7/dist-packages/PinguyBuildergtk/PinguyBuilder_gtk.py
+f0e23b2e53ce239b76099223c6d1bc00  /usr/lib/python2.7/dist-packages/PinguyBuildergtk/PinguyBuilder_gtk.py
 1db7aa09c2bda1d08b0f7b61a54a2e2d  /usr/lib/PinguyBuilder/EFI/BOOT/bootia32.efi
 6e94c3d33194c89bd327bfaa5871e294  /usr/lib/PinguyBuilder/EFI/BOOT/BOOTx64.EFI
 7dc5588d483932c1215cc6ff785ceb36  /usr/lib/PinguyBuilder/EFI/BOOT/grubx64.efi
@@ -255,10 +255,10 @@ ce6bb19c44450fe8abc6ff323ae2340b  /usr/lib/PinguyBuilder/boot/grub/grub.cfg
 d4478ae7afc82d34c317576f57be78fe  /usr/bin/plymouth-preview
 53d1437e1fbf3663ae32f71ab145a102  /usr/bin/PinguyBuilder-gtk
 3687f43f13d277c8dc95a29ffda91ad6  /usr/bin/PinguyBuilder-skelcopy
-4e8108edf73dee54dca6fb7e037621e1  /usr/bin/PinguyBuilder
+f12b3cda6c3f7d5006dceec71efa00d5  /usr/bin/PinguyBuilder
 c3467eaf8e3fee76922d67697776754b  /usr/share/applications/PinguyBuilder-gtk.desktop
 b6f9fa33acc7efd5e169d189c0f21d1c  /usr/share/applications/PinguyBuilder-gtk-kde.desktop
-40cb257405cadf47c7aae4d95e62acfa  /usr/share/PinguyBuilder-gtk/ui/PinguyBuilder-gtk.glade
+81d1bf00264445a3c156eb93ddff584f  /usr/share/PinguyBuilder-gtk/ui/PinguyBuilder-gtk.glade
 5c004423328bd61aaa02b5eb910eded1  /usr/share/PinguyBuilder-gtk/pixmaps/PinguyBuilder-gtk.png
 0a4b5571083912606f1b675f0e0bdd31  /usr/share/icons/hicolor/22x22/apps/PinguyBuilder-gtk.png
 9c38dc868015f0a0dc486085f3ffb278  /usr/share/icons/hicolor/48x48/apps/PinguyBuilder-gtk.png
@@ -278,7 +278,7 @@ a18e995720547a1fec996f3e95db0379  /usr/share/icons/hicolor/128x128/apps/PinguyBu
 6da37846d249491b8286fbb1cf00b3d7  /usr/share/lintian/overrides/pinguybuilder
 e843559157583b3d2eaa08076b36cb3d  /usr/share/man/man1/PinguyBuilder.1.gz
 93e500b31acdc53d294f101dfe9f1b49  /usr/share/man/man1/PinguyBuilder-gtk.1.gz
-1de64ebf742a87a9e90132eabaebe897  /etc/PinguyBuilder.conf
+7dac1aa76e460718a661f711ae5863fe  /etc/PinguyBuilder.conf
 f3d86357a97538f4074fbce2175ed0a6  /etc/PinguyBuilder/preseed/custom.seed
 983424f6b5010acc06da4dc2e57a6192  /etc/PinguyBuilder/mdm/mdm.conf
 983424f6b5010acc06da4dc2e57a6192  /etc/PinguyBuilder/gdm3/custom.conf

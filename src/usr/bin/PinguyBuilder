@@ -634,6 +634,14 @@ EOF
     cp -a /usr/lib/PinguyBuilder/boot $WORKDIR/ISOTMP/
     cp -a /usr/lib/PinguyBuilder/EFI $WORKDIR/ISOTMP/
     #cp $WORKDIR/ISOTMP/EFI/BOOT/BOOTx64.EFI $WORKDIR/ISOTMP/EFI/BOOT/fallback.efi
+    if [[ "$UNATTENDEDINSTALL" = "1" ]]; then
+        awk -v newentry="\
+menuentry \"Unattended Install __LIVECDLABEL__ \" {
+        set gfxpayload=keep
+        linux   /casper/vmlinuz  file=/cdrom/preseed/custom.seed boot=casper automatic-ubiquity iso-scan/filename= quiet splash --
+        initrd  /casper/initrd.gz
+}" '/^menuentry.*/ && !x {print newentry; x=1} 1' $WORKDIR/ISOTMP/boot/grub/grub.cfg > awktmp && mv awktmp $WORKDIR/ISOTMP/boot/grub/grub.cfg
+    fi
     sed -i "s/__LIVECDLABEL__/$LIVECDLABEL/g" $WORKDIR/ISOTMP/boot/grub/grub.cfg
     sed -i "s/__LIVECDLABEL__/$LIVECDLABEL/g" $WORKDIR/ISOTMP/boot/grub/loopback.cfg
 
