@@ -860,11 +860,11 @@ def msg_input(title, message, label, default='', window=None, password=False):
 
 
 def escape_bash_script(script):
-    return script.replace('\\', '\\\\').replace('\"', '\\\"')
+    return script.replace('\\', '\\\\').replace('\"', '\\\"').replace('$', '\\$')
 
 
 def unescape_bash_script(script):
-    return script.replace('\\\"', '\"').replace('\\\\', '\\')
+    return script.replace('\\$', '$').replace('\\\"', '\"').replace('\\\\', '\\')
 
 
 class Namespace: pass
