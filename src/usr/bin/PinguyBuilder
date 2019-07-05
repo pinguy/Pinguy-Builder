@@ -436,7 +436,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     . /etc/lsb-release
     sed -i "s/deb/#deb/g" $WORKDIR/dummysys/etc/apt/sources.list
     sed -i '/cdrom:/d' $WORKDIR/dummysys/etc/apt/sources.list 2>&1 | log_msg
-    echo "deb cdrom:[$DISKINFONAME $DISTRIB_RELEASE - Release $ARCH]/ dists/" >> $WORKDIR/dummysys/etc/apt/sources.list
+    echo "deb cdrom:[$DISKINFONAME $DISTRIB_RELEASE - Release $ARCH]/dists/" >> $WORKDIR/dummysys/etc/apt/sources.list
     echo "$SOURCESLIST" >> $WORKDIR/dummysys/etc/apt/sources.list
 
     #renaming grub config
