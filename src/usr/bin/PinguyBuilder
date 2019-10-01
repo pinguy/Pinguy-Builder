@@ -470,7 +470,7 @@ log_msg "Renaming Distro to $LIVECDLABEL"
     find $WORKDIR/dummysys/var/cache/apt-xapian-index -type f -exec rm -rf '{}' \; 2>&1 | log_msg
     find $WORKDIR/dummysys/var/lib/apt -type f -exec rm -rf '{}' \; 2>&1 | log_msg
     rm -rf $WORKDIR/dummysys/var/lib/ureadahead/pack 2>&1 | log_msg
-    rm -f $WORKDIR/dummysys/etc/X11/xorg.conf*
+    rm -rf $WORKDIR/dummysys/etc/X11/xorg.conf*
     rm -f $WORKDIR/dummysys/etc/{hosts,hostname,mtab*,fstab}
     if [ ! -L $WORKDIR/dummysys/etc/resolv.conf ]; then
         rm -f $WORKDIR/dummysys/etc/resolv.conf
