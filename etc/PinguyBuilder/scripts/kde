@@ -1,3 +1,0 @@
-#!/bin/bash
-sudo apt update
-pkexec ubiquity kde_ui

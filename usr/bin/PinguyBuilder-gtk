@@ -1,3 +1,0 @@
-#!/bin/bash
-xhost +si:localuser:root
-pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY /usr/lib/python2.7/dist-packages/PinguyBuildergtk/PinguyBuilder_gtk.py
